@@ -89,7 +89,7 @@ $menus = $isKasir
         <a href="<?= app_e(app_url($isKasir ? '/kasir/dashboard' : '/admin/dashboard')) ?>" class="app-brand-link">
             <span class="app-brand-logo">
                 <img
-                    src="<?= app_e(app_asset('assets/images/logo-lab.png')) ?>"
+                    src="<?= app_e(app_asset('assets/images/mts.png')) ?>"
                     alt="Logo"
                     onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';"
                 >
