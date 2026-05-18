@@ -1,0 +1,890 @@
+.laporan-page {
+    display: grid;
+    gap: 10px;
+}
+
+.laporan-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 9px 11px;
+    border-radius: 11px;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.laporan-alert i {
+    margin-top: 1px;
+    font-size: 16px;
+}
+
+.laporan-alert-success {
+    color: #116530;
+    background: #ecfdf3;
+    border: 1px solid rgba(18, 128, 72, 0.18);
+}
+
+.laporan-alert-error {
+    color: #b42318;
+    background: #fff1f3;
+    border: 1px solid rgba(217, 45, 32, 0.18);
+}
+
+.laporan-hero {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.26);
+    border-radius: 15px;
+    color: #ffffff;
+    background:
+        radial-gradient(circle at 84% 0%, rgba(255, 255, 255, 0.12), transparent 24%),
+        radial-gradient(circle at 10% 90%, rgba(244, 201, 93, 0.10), transparent 22%),
+        linear-gradient(135deg, #063c25, #128048);
+    box-shadow: 0 8px 22px rgba(13, 70, 40, 0.09);
+}
+
+.laporan-hero::before {
+    content: "";
+    position: absolute;
+    width: 130px;
+    height: 130px;
+    right: -48px;
+    top: -62px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.10);
+}
+
+.laporan-hero::after {
+    content: "";
+    position: absolute;
+    width: 86px;
+    height: 86px;
+    left: 36%;
+    bottom: -58px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 999px;
+}
+
+.laporan-hero > * {
+    position: relative;
+    z-index: 1;
+}
+
+.laporan-hero-content {
+    min-width: 0;
+}
+
+.laporan-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 7px;
+    border-radius: 999px;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.13);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: 0.055em;
+    text-transform: uppercase;
+}
+
+.laporan-eyebrow i {
+    color: #f4c95d;
+    font-size: 13px;
+}
+
+.laporan-hero h2 {
+    margin: 8px 0 0;
+    font-size: clamp(21px, 1.9vw, 28px);
+    line-height: 1.08;
+    font-weight: 950;
+    letter-spacing: -0.038em;
+}
+
+.laporan-hero p {
+    max-width: 680px;
+    margin: 6px 0 0;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+.laporan-hero-actions {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 7px;
+    min-width: 160px;
+}
+
+.laporan-btn {
+    min-height: 31px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border: 0;
+    border-radius: 9px;
+    font-size: 10px;
+    font-weight: 850;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+        transform 150ms ease,
+        background 150ms ease,
+        color 150ms ease,
+        border-color 150ms ease,
+        box-shadow 150ms ease;
+}
+
+.laporan-btn i {
+    font-size: 15px;
+}
+
+.laporan-btn:hover {
+    transform: translateY(-1px);
+}
+
+.laporan-btn-primary {
+    color: #073b24;
+    background: #ffffff;
+    box-shadow: 0 8px 18px rgba(3, 31, 21, 0.12);
+}
+
+.laporan-btn-primary:hover {
+    color: #073b24;
+}
+
+.laporan-btn-soft {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.laporan-btn-soft:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.20);
+}
+
+.laporan-btn-ghost,
+.laporan-btn-muted {
+    color: var(--app-green);
+    background: var(--app-green-soft);
+    border: 1px solid rgba(18, 128, 72, 0.14);
+}
+
+.laporan-btn-ghost:hover,
+.laporan-btn-muted:hover {
+    color: var(--app-green);
+    background: #ffffff;
+}
+
+.laporan-nav {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 7px;
+    border: 1px solid var(--app-border);
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 6px 16px rgba(13, 70, 40, 0.05);
+}
+
+.laporan-nav a {
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 9px;
+    border-radius: 10px;
+    color: var(--app-muted);
+    background: #ffffff;
+    border: 1px solid transparent;
+    font-size: 10px;
+    font-weight: 900;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+        transform 150ms ease,
+        color 150ms ease,
+        background 150ms ease,
+        border-color 150ms ease;
+}
+
+.laporan-nav a i {
+    font-size: 15px;
+}
+
+.laporan-nav a:hover {
+    transform: translateY(-1px);
+    color: var(--app-green);
+    background: var(--app-green-soft);
+}
+
+.laporan-nav a.is-active {
+    color: #ffffff;
+    background: var(--app-green);
+    border-color: var(--app-green);
+}
+
+.laporan-filter-panel,
+.laporan-panel,
+.laporan-chart-card {
+    border: 1px solid var(--app-border);
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 7px 18px rgba(13, 70, 40, 0.055);
+}
+
+.laporan-panel,
+.laporan-chart-card {
+    overflow: hidden;
+}
+
+.laporan-filter-panel {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px;
+}
+
+.laporan-filter-panel > div > span,
+.laporan-card-head span {
+    display: block;
+    margin-bottom: 2px;
+    color: var(--app-green);
+    font-size: 8px;
+    font-weight: 950;
+    letter-spacing: 0.055em;
+    text-transform: uppercase;
+}
+
+.laporan-filter-panel h3,
+.laporan-card-head h3 {
+    margin: 0;
+    color: var(--app-text);
+    font-size: 14px;
+    line-height: 1.15;
+    font-weight: 950;
+    letter-spacing: -0.02em;
+}
+
+.laporan-card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 9px;
+    padding: 11px 12px;
+    border-bottom: 1px solid rgba(24, 91, 58, 0.08);
+}
+
+.laporan-mini-link {
+    min-height: 25px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 7px;
+    border-radius: 999px;
+    color: var(--app-green);
+    background: var(--app-green-soft);
+    border: 1px solid rgba(18, 128, 72, 0.12);
+    font-size: 9px;
+    font-weight: 900;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.laporan-mini-link:hover {
+    color: var(--app-green);
+    background: #ffffff;
+}
+
+.laporan-filter-form {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin: 0;
+}
+
+.laporan-filter-form label {
+    display: grid;
+    gap: 3px;
+}
+
+.laporan-filter-form label span {
+    color: var(--app-muted);
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.laporan-filter-form input {
+    min-height: 31px;
+    padding: 0 8px;
+    border: 1px solid var(--app-border);
+    border-radius: 9px;
+    outline: none;
+    color: var(--app-text);
+    background: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.laporan-filter-form input:focus {
+    border-color: rgba(18, 128, 72, 0.34);
+    box-shadow: 0 0 0 3px rgba(18, 128, 72, 0.08);
+}
+
+.laporan-summary {
+    width: 100%;
+    display: grid;
+    gap: 9px;
+    align-items: stretch;
+}
+
+.laporan-summary.summary-count-1 {
+    grid-template-columns: minmax(220px, 320px);
+    justify-content: center;
+}
+
+.laporan-summary.summary-count-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.laporan-summary.summary-count-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.laporan-summary.summary-count-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.laporan-summary.summary-count-many {
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+.laporan-summary-card {
+    position: relative;
+    overflow: hidden;
+    min-height: 78px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px;
+    border: 1px solid var(--app-border);
+    border-radius: 13px;
+    background: #ffffff;
+    box-shadow: 0 6px 16px rgba(13, 70, 40, 0.055);
+    transition:
+        transform 150ms ease,
+        box-shadow 150ms ease,
+        border-color 150ms ease;
+}
+
+.laporan-summary-card::before {
+    content: "";
+    position: absolute;
+    right: -18px;
+    top: -20px;
+    width: 62px;
+    height: 62px;
+    border-radius: 999px;
+    opacity: 0.12;
+}
+
+.laporan-summary-card:hover {
+    transform: translateY(-1px);
+    border-color: rgba(18, 128, 72, 0.16);
+    box-shadow: 0 10px 22px rgba(13, 70, 40, 0.075);
+}
+
+.laporan-summary-icon {
+    position: relative;
+    z-index: 1;
+    width: 31px;
+    height: 31px;
+    display: grid;
+    place-items: center;
+    flex: 0 0 31px;
+    border-radius: 9px;
+}
+
+.laporan-summary-icon i {
+    color: #ffffff;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.laporan-summary-card div {
+    position: relative;
+    z-index: 1;
+    min-width: 0;
+}
+
+.laporan-summary-card small {
+    display: block;
+    color: var(--app-muted);
+    font-size: 9px;
+    font-weight: 850;
+}
+
+.laporan-summary-card strong {
+    display: block;
+    margin-top: 4px;
+    color: var(--app-text);
+    font-size: clamp(17px, 1.45vw, 21px);
+    line-height: 1;
+    font-weight: 950;
+    letter-spacing: -0.035em;
+}
+
+.laporan-summary-card p {
+    margin: 4px 0 0;
+    color: var(--app-muted-2);
+    font-size: 9px;
+    font-weight: 750;
+    line-height: 1.25;
+}
+
+.summary-green .laporan-summary-icon {
+    background: linear-gradient(145deg, #16a34a, #128048);
+}
+
+.summary-green::before {
+    background: #128048;
+}
+
+.summary-blue .laporan-summary-icon {
+    background: linear-gradient(145deg, #3b82f6, #246bfe);
+}
+
+.summary-blue::before {
+    background: #246bfe;
+}
+
+.summary-orange .laporan-summary-icon {
+    background: linear-gradient(145deg, #f59e0b, #f79009);
+}
+
+.summary-orange::before {
+    background: #f79009;
+}
+
+.summary-purple .laporan-summary-icon {
+    background: linear-gradient(145deg, #8b5cf6, #7a5af8);
+}
+
+.summary-purple::before {
+    background: #7a5af8;
+}
+
+.summary-red .laporan-summary-icon {
+    background: linear-gradient(145deg, #ef4444, #d92d20);
+}
+
+.summary-red::before {
+    background: #d92d20;
+}
+
+.laporan-chart-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(240px, 0.75fr);
+    gap: 10px;
+}
+
+.laporan-chart-wide {
+    grid-row: span 2;
+}
+
+.laporan-chart-wrap {
+    height: 205px;
+    padding: 9px 10px 11px;
+}
+
+.laporan-chart-wrap.chart-small {
+    height: 165px;
+}
+
+.laporan-chart-wrap canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.laporan-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    align-items: start;
+}
+
+.laporan-table-wrap {
+    overflow-x: auto;
+}
+
+.laporan-table {
+    width: 100%;
+    min-width: 610px;
+    border-collapse: collapse;
+}
+
+.laporan-table th {
+    padding: 7px 8px;
+    color: var(--app-muted);
+    background: var(--app-green-soft-2);
+    border-bottom: 1px solid rgba(24, 91, 58, 0.08);
+    font-size: 8px;
+    font-weight: 950;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.laporan-table td {
+    padding: 8px;
+    color: var(--app-text);
+    border-bottom: 1px solid rgba(24, 91, 58, 0.08);
+    font-size: 10px;
+    vertical-align: middle;
+}
+
+.laporan-table tbody tr {
+    transition: background 150ms ease;
+}
+
+.laporan-table tbody tr:hover {
+    background: rgba(18, 128, 72, 0.035);
+}
+
+.laporan-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 22px;
+    padding: 4px 6px;
+    border-radius: 999px;
+    color: #334155;
+    background: #f8fafc;
+    border: 1px solid rgba(51, 65, 85, 0.08);
+    font-size: 9px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.laporan-date i {
+    color: var(--app-green);
+    font-size: 12px;
+}
+
+.laporan-number,
+.laporan-money,
+.laporan-stock {
+    display: inline-block;
+    color: var(--app-text);
+    font-size: 10px;
+    font-weight: 950;
+    white-space: nowrap;
+}
+
+.laporan-money.is-muted {
+    color: #64748b;
+}
+
+.laporan-money.is-profit {
+    color: #128048;
+}
+
+.laporan-stock.is-low {
+    color: #f79009;
+}
+
+.laporan-product {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 190px;
+}
+
+.laporan-product > span {
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    flex: 0 0 28px;
+    border-radius: 8px;
+    color: #ffffff;
+    background: linear-gradient(145deg, #128048, #0b633a);
+    font-size: 10px;
+    font-weight: 950;
+}
+
+.laporan-product > span.is-danger {
+    background: linear-gradient(145deg, #f59e0b, #f79009);
+}
+
+.laporan-product > span i {
+    font-size: 15px;
+}
+
+.laporan-product strong {
+    display: block;
+    color: var(--app-text);
+    font-size: 10px;
+    font-weight: 950;
+}
+
+.laporan-product small {
+    display: block;
+    margin-top: 1px;
+    color: var(--app-muted);
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.laporan-method-list {
+    display: grid;
+    gap: 7px;
+    padding: 10px;
+}
+
+.laporan-method-item {
+    display: grid;
+    grid-template-columns: 30px 1fr auto;
+    align-items: center;
+    gap: 7px;
+    padding: 8px;
+    border-radius: 11px;
+    transition:
+        transform 150ms ease,
+        box-shadow 150ms ease;
+}
+
+.laporan-method-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 7px 16px rgba(13, 70, 40, 0.06);
+}
+
+.laporan-method-item > span {
+    width: 30px;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    border-radius: 9px;
+    color: #ffffff;
+}
+
+.laporan-method-item i {
+    font-size: 15px;
+}
+
+.laporan-method-item strong {
+    display: block;
+    color: var(--app-text);
+    font-size: 10px;
+    font-weight: 950;
+}
+
+.laporan-method-item small {
+    display: block;
+    margin-top: 1px;
+    color: var(--app-muted);
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.laporan-method-item b {
+    color: var(--app-text);
+    font-size: 10px;
+    font-weight: 950;
+    white-space: nowrap;
+}
+
+.method-cash {
+    background: #eaf8f0;
+}
+
+.method-cash > span {
+    background: #128048;
+}
+
+.method-qris {
+    background: #edf3ff;
+}
+
+.method-qris > span {
+    background: #246bfe;
+}
+
+.method-transfer {
+    background: #f3f0ff;
+}
+
+.method-transfer > span {
+    background: #7a5af8;
+}
+
+.method-ewallet {
+    background: #fff7ed;
+}
+
+.method-ewallet > span {
+    background: #f79009;
+}
+
+.laporan-empty,
+.laporan-filter-empty {
+    padding: 24px 12px;
+    text-align: center;
+}
+
+.laporan-empty.is-chart {
+    min-height: 160px;
+    display: grid;
+    place-content: center;
+}
+
+.laporan-empty span,
+.laporan-filter-empty span {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 9px;
+    border-radius: 12px;
+    color: var(--app-green);
+    background: var(--app-green-soft);
+}
+
+.laporan-empty span i,
+.laporan-filter-empty span i {
+    font-size: 20px;
+}
+
+.laporan-empty h4,
+.laporan-filter-empty h4 {
+    margin: 0;
+    color: var(--app-text);
+    font-size: 14px;
+    font-weight: 950;
+}
+
+.laporan-empty p,
+.laporan-filter-empty p {
+    max-width: 420px;
+    margin: 5px auto 0;
+    color: var(--app-muted);
+    font-size: 10px;
+    line-height: 1.45;
+}
+
+@media (max-width: 1240px) {
+    .laporan-summary.summary-count-3,
+    .laporan-summary.summary-count-4,
+    .laporan-summary.summary-count-many {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .laporan-filter-panel {
+        flex-direction: column;
+    }
+
+    .laporan-filter-form {
+        justify-content: flex-start;
+    }
+
+    .laporan-chart-grid,
+    .laporan-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .laporan-chart-wide {
+        grid-row: auto;
+    }
+}
+
+@media (max-width: 760px) {
+    .laporan-page {
+        gap: 9px;
+    }
+
+    .laporan-hero {
+        flex-direction: column;
+        padding: 13px;
+    }
+
+    .laporan-hero-actions {
+        justify-content: flex-start;
+        min-width: 0;
+    }
+
+    .laporan-hero-actions .laporan-btn {
+        width: 100%;
+    }
+
+    .laporan-summary,
+    .laporan-summary.summary-count-1,
+    .laporan-summary.summary-count-2,
+    .laporan-summary.summary-count-3,
+    .laporan-summary.summary-count-4,
+    .laporan-summary.summary-count-many {
+        grid-template-columns: 1fr;
+    }
+
+    .laporan-summary-card {
+        min-height: auto;
+    }
+
+    .laporan-filter-panel,
+    .laporan-card-head {
+        padding: 10px;
+    }
+
+    .laporan-filter-form label,
+    .laporan-filter-form .laporan-btn {
+        width: 100%;
+        flex-basis: 100%;
+    }
+
+    .laporan-chart-wrap,
+    .laporan-chart-wrap.chart-small {
+        height: 190px;
+        padding: 8px;
+    }
+
+    .laporan-card-head {
+        flex-direction: column;
+    }
+
+    .laporan-method-item {
+        grid-template-columns: 30px 1fr;
+    }
+
+    .laporan-method-item b {
+        grid-column: 2;
+    }
+}
+
+@media (max-width: 520px) {
+    .laporan-hero h2 {
+        font-size: 20px;
+    }
+
+    .laporan-hero p {
+        font-size: 10px;
+    }
+
+    .laporan-nav a {
+        min-height: 30px;
+        padding: 6px 8px;
+    }
+}
