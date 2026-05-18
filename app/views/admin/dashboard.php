@@ -2,7 +2,7 @@
 $title = $title ?? 'Dashboard Admin';
 $activeMenu = $activeMenu ?? 'dashboard';
 
-$pageCss = ['assets/css/dashboard.css?v=1' . time()];
+$pageCss = ['assets/css/dashboard.css'];
 $pageScript = 'dashboard';
 $useChart = true;
 
@@ -104,7 +104,7 @@ $userName = dash_user_name($user);
 <?php require APP_PATH . '/views/layouts/navbar.php'; ?>
 
 <div class="dashboard-page">
-    <section class="dashboard-hero" data-animate="fade-up">
+    <section class="dashboard-hero" data-aos="fade-down" data-aos-duration="700">
         <div class="dashboard-hero-content">
             <span class="dashboard-eyebrow">
                 <i class="ti ti-sparkles"></i>
@@ -132,53 +132,53 @@ $userName = dash_user_name($user);
     </section>
 
     <section class="dashboard-stats">
-        <a href="<?= dash_e(app_url('/admin/barang')) ?>" class="dashboard-stat-card stat-green" data-animate="fade-right" data-delay="40">
+        <a href="<?= dash_e(app_url('/admin/barang')) ?>" class="dashboard-stat-card stat-green" data-aos="flip-left" data-aos-delay="80">
             <span class="dashboard-stat-icon">
                 <i class="ti ti-package"></i>
             </span>
             <div>
                 <small>Total Barang</small>
-                <strong data-count-up="<?= dash_e((string) $totalBarang) ?>">0</strong>
+                <strong data-counter="<?= dash_e((string) $totalBarang) ?>" data-counter-format="thousand">0</strong>
                 <p>Semua barang terdata</p>
             </div>
         </a>
 
-        <a href="<?= dash_e(app_url('/admin/riwayat-transaksi')) ?>" class="dashboard-stat-card stat-blue" data-animate="zoom-in" data-delay="100">
+        <a href="<?= dash_e(app_url('/admin/riwayat-transaksi')) ?>" class="dashboard-stat-card stat-blue" data-aos="flip-right" data-aos-delay="160">
             <span class="dashboard-stat-icon">
                 <i class="ti ti-receipt"></i>
             </span>
             <div>
                 <small>Transaksi Hari Ini</small>
-                <strong data-count-up="<?= dash_e((string) $totalTransaksiHariIni) ?>">0</strong>
+                <strong data-counter="<?= dash_e((string) $totalTransaksiHariIni) ?>" data-counter-format="thousand">0</strong>
                 <p>Jumlah transaksi masuk</p>
             </div>
         </a>
 
-        <a href="<?= dash_e(app_url('/admin/laporan')) ?>" class="dashboard-stat-card stat-orange" data-animate="zoom-in" data-delay="160">
+        <a href="<?= dash_e(app_url('/admin/laporan')) ?>" class="dashboard-stat-card stat-orange" data-aos="flip-left" data-aos-delay="240">
             <span class="dashboard-stat-icon">
                 <i class="ti ti-cash"></i>
             </span>
             <div>
                 <small>Penjualan Hari Ini</small>
-                <strong data-count-up="<?= dash_e((string) $totalPenjualanHariIni) ?>" data-prefix="Rp ">Rp 0</strong>
+                <strong data-counter="<?= dash_e((string) $totalPenjualanHariIni) ?>" data-counter-prefix="Rp " data-counter-format="rupiah">Rp 0</strong>
                 <p>Total omzet hari ini</p>
             </div>
         </a>
 
-        <a href="<?= dash_e(app_url('/admin/barang')) ?>" class="dashboard-stat-card stat-red" data-animate="fade-left" data-delay="220">
+        <a href="<?= dash_e(app_url('/admin/barang')) ?>" class="dashboard-stat-card stat-red" data-aos="flip-right" data-aos-delay="320">
             <span class="dashboard-stat-icon">
                 <i class="ti ti-alert-triangle"></i>
             </span>
             <div>
                 <small>Stok Menipis</small>
-                <strong data-count-up="<?= dash_e((string) $stokMenipis) ?>">0</strong>
+                <strong data-counter="<?= dash_e((string) $stokMenipis) ?>" data-counter-format="thousand">0</strong>
                 <p>Perlu dicek/restock</p>
             </div>
         </a>
     </section>
 
     <section class="dashboard-grid">
-        <article class="dashboard-card dashboard-card-large" data-animate="fade-right" data-delay="150">
+        <article class="dashboard-card dashboard-card-large" data-aos="zoom-in-up" data-aos-delay="100">
             <div class="dashboard-card-header">
                 <div>
                     <span>Grafik Penjualan</span>
@@ -196,7 +196,7 @@ $userName = dash_user_name($user);
             </div>
         </article>
 
-        <article class="dashboard-card" data-animate="fade-left" data-delay="150">
+        <article class="dashboard-card" data-aos="zoom-in-down" data-aos-delay="200">
             <div class="dashboard-card-header">
                 <div>
                     <span>Status Stok</span>
@@ -222,7 +222,7 @@ $userName = dash_user_name($user);
     </section>
 
     <section class="dashboard-grid dashboard-grid-bottom">
-        <article class="dashboard-card" data-animate="fade-right" data-delay="150">
+        <article class="dashboard-card" data-aos="fade-up-right" data-aos-delay="100">
             <div class="dashboard-card-header">
                 <div>
                     <span>Produk Populer</span>
@@ -240,7 +240,7 @@ $userName = dash_user_name($user);
             </div>
         </article>
 
-        <article class="dashboard-card" data-animate="fade-left" data-delay="150">
+        <article class="dashboard-card" data-aos="fade-up-left" data-aos-delay="200">
             <div class="dashboard-card-header">
                 <div>
                     <span>Aktivitas</span>
@@ -287,7 +287,7 @@ $userName = dash_user_name($user);
         </article>
     </section>
 
-    <section class="dashboard-shortcuts" data-animate="fade-up" data-delay="150">
+    <section class="dashboard-shortcuts" data-aos="fade-up" data-aos-delay="100">
         <a href="<?= dash_e(app_url('/admin/barang/create')) ?>" class="dashboard-shortcut">
             <i class="ti ti-package"></i>
             <span>Tambah Barang</span>

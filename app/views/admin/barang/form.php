@@ -3,6 +3,7 @@ $title = $title ?? 'Form Barang';
 $activeMenu = $activeMenu ?? 'barang';
 
 $pageCss = ['assets/css/barang.css'];
+$useBarcode = true;
 
 $formAction = $formAction ?? '/admin/barang/store';
 $formMode = $formMode ?? 'create';
@@ -35,7 +36,7 @@ if (!function_exists('barang_field_error')) {
 <?php require APP_PATH . '/views/layouts/navbar.php'; ?>
 
 <div class="barang-page">
-    <section class="barang-hero barang-form-hero">
+    <section class="barang-hero barang-form-hero" data-aos="fade-down" data-aos-duration="700">
         <div class="barang-hero-content">
             <span class="barang-eyebrow">
                 <i class="<?= $isEdit ? 'ti ti-edit' : 'ti ti-package-plus' ?>"></i>
@@ -60,7 +61,7 @@ if (!function_exists('barang_field_error')) {
         </div>
     </section>
 
-    <section class="barang-form-layout">
+    <section class="barang-form-layout" data-aos="fade-up" data-aos-delay="150">
         <article class="barang-form-card">
             <div class="barang-form-head">
                 <div>
@@ -114,22 +115,44 @@ if (!function_exists('barang_field_error')) {
                             <span>*</span>
                         </label>
 
-                        <div class="barang-input-wrap">
+                        <div class="barang-input-wrap barang-input-wrap-with-action">
                             <i class="ti ti-barcode"></i>
                             <input
                                 type="text"
                                 id="barcode"
                                 name="barcode"
                                 value="<?= app_e($barcode) ?>"
-                                placeholder="Kosongkan untuk auto-generate"
+                                placeholder="Scan / ketik / klik Generate"
                                 class="<?= app_e(barang_field_error($errors, 'barcode')) ?>"
                                 autocomplete="off"
+                                data-barang-barcode-input
                             >
+                            <button
+                                type="button"
+                                class="barang-btn barang-btn-soft barang-btn-generate"
+                                data-barang-generate-barcode
+                                data-generate-url="<?= app_e(app_url('/admin/barang/generate-barcode')) ?>"
+                                title="Generate barcode otomatis"
+                            >
+                                <i class="ti ti-wand"></i>
+                                <span>Generate</span>
+                            </button>
                         </div>
 
                         <small class="barang-field-hint">
-                            Isi kalau barang punya barcode asli. Kalau kosong, sistem bikin sendiri.
+                            Bisa diisi manual (untuk barang pabrikan dengan barcode asli), discan langsung dari kemasan, atau klik <strong>Generate</strong> untuk barcode internal otomatis.
                         </small>
+
+                        <?php if (!empty($barcode)): ?>
+                            <div class="barang-barcode-preview" data-barang-barcode-preview>
+                                <svg id="barangBarcodePreview" class="barang-barcode-svg" data-barcode-value="<?= app_e($barcode) ?>"></svg>
+                            </div>
+                        <?php else: ?>
+                            <div class="barang-barcode-preview is-empty" data-barang-barcode-preview>
+                                <svg id="barangBarcodePreview" class="barang-barcode-svg" data-barcode-value=""></svg>
+                                <span class="barang-barcode-empty-text">Preview barcode akan muncul setelah barcode diisi.</span>
+                            </div>
+                        <?php endif; ?>
 
                         <?php if (isset($errors['barcode'])): ?>
                             <small class="barang-field-error"><?= app_e($errors['barcode']) ?></small>
@@ -358,7 +381,7 @@ if (!function_exists('barang_field_error')) {
     </section>
 </div>
 
-<script src="<?= app_e(app_asset('assets/js/barang.js')) ?>"></script>
+<script src="<?= app_e(app_asset_versioned('assets/js/barang.js')) ?>"></script>
 
 <?php require APP_PATH . '/views/layouts/footer.php'; ?>
 <?php require APP_PATH . '/views/layouts/scripts.php'; ?>

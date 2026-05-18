@@ -354,6 +354,129 @@ class Barang extends Model
         return $this->existsByField('barcode', $barcode, $exceptId);
     }
 
+    /**
+     * Cari barang aktif by barcode (dipakai POS scan).
+     */
+    public function findActiveByBarcode(string $barcode)
+    {
+        $barcode = trim($barcode);
+
+        if ($barcode === '') {
+            return false;
+        }
+
+        $sql = "
+            SELECT 
+                b.id,
+                b.kode_barang,
+                b.barcode,
+                b.nama,
+                b.id_kategori,
+                k.nama AS nama_kategori,
+                b.satuan,
+                b.harga_jual,
+                b.stok,
+                b.stok_minimum,
+                b.status
+            FROM {$this->table} b
+            INNER JOIN kategori k ON k.id = b.id_kategori
+            WHERE b.barcode = :barcode
+              AND b.status = 'aktif'
+            LIMIT 1
+        ";
+
+        return $this->fetch($sql, [
+            'barcode' => $barcode,
+        ]);
+    }
+
+    /**
+     * Generate barcode internal sequential.
+     * Format: KPS + 7 digit angka, contoh: KPS0000001
+     * Return: string barcode unik (pasti gak duplikat).
+     */
+    public function generateNextBarcode(string $prefix = 'KPS', int $padLength = 7): string
+    {
+        $prefix = trim($prefix) === '' ? 'KPS' : strtoupper(trim($prefix));
+        $padLength = max(4, min(12, $padLength));
+
+        // Cari sequence terbesar dari barcode existing yang punya prefix sama
+        $sql = "
+            SELECT barcode
+            FROM {$this->table}
+            WHERE barcode LIKE :prefix
+            ORDER BY LENGTH(barcode) DESC, barcode DESC
+            LIMIT 1
+        ";
+
+        $row = $this->fetch($sql, [
+            'prefix' => $prefix . '%',
+        ]);
+
+        $next = 1;
+
+        if ($row && isset($row['barcode'])) {
+            $numericPart = preg_replace('/^' . preg_quote($prefix, '/') . '/', '', (string) $row['barcode']);
+            $numericPart = (int) preg_replace('/\D/', '', $numericPart);
+
+            if ($numericPart > 0) {
+                $next = $numericPart + 1;
+            }
+        }
+
+        // Loop maksimal 10x buat handle race condition kalau ada bentrok
+        $maxAttempt = 10;
+
+        for ($i = 0; $i < $maxAttempt; $i++) {
+            $candidate = $prefix . str_pad((string) $next, $padLength, '0', STR_PAD_LEFT);
+
+            if (!$this->barcodeExists($candidate)) {
+                return $candidate;
+            }
+
+            $next++;
+        }
+
+        // Fallback ekstrim: prefix + microtime
+        return $prefix . str_pad((string) (time() % 9999999), $padLength, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Ambil barang by IDs (dipakai cetak label bulk).
+     * @param int[] $ids
+     */
+    public function findManyByIds(array $ids): array
+    {
+        $ids = array_values(array_unique(array_filter(array_map('intval', $ids), static fn ($id) => $id > 0)));
+
+        if (empty($ids)) {
+            return [];
+        }
+
+        // Bikin placeholder dinamis (?, ?, ?...)
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+
+        $sql = "
+            SELECT 
+                b.id,
+                b.kode_barang,
+                b.barcode,
+                b.nama,
+                b.satuan,
+                b.harga_jual,
+                b.stok,
+                b.status
+            FROM {$this->table} b
+            WHERE b.id IN ({$placeholders})
+            ORDER BY b.nama ASC
+        ";
+
+        // Pake fetchAll dengan positional binding
+        $statement = $this->query($sql, $ids);
+
+        return $statement->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
+
     public function checkDuplicate(string $field, string $value, ?int $ignoreId = null): bool
     {
         return $this->existsByField($field, $value, $ignoreId);

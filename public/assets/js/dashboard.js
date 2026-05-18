@@ -87,8 +87,18 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 animation: {
-                    duration: 900,
+                    duration: 1500,
                     easing: 'easeOutQuart',
+                },
+                animations: {
+                    y: {
+                        from: function (ctx) {
+                            if (ctx.type === 'data' && ctx.mode === 'default' && !ctx.dropped) {
+                                ctx.dropped = true;
+                                return ctx.chart.scales.y.getPixelForValue(0);
+                            }
+                        },
+                    },
                 },
                 interaction: {
                     mode: 'index',
@@ -177,8 +187,10 @@
                 maintainAspectRatio: false,
                 cutout: '68%',
                 animation: {
-                    duration: 900,
-                    easing: 'easeOutQuart',
+                    animateRotate: true,
+                    animateScale: true,
+                    duration: 1300,
+                    easing: 'easeOutBack',
                 },
                 plugins: {
                     legend: {
@@ -236,8 +248,14 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 animation: {
-                    duration: 900,
+                    duration: 1200,
                     easing: 'easeOutQuart',
+                    delay: function (ctx) {
+                        if (ctx.type === 'data' && ctx.mode === 'default') {
+                            return ctx.dataIndex * 80;
+                        }
+                        return 0;
+                    },
                 },
                 plugins: {
                     legend: {
@@ -279,28 +297,29 @@
     }
 
     function initCountUp() {
-        const counters = document.querySelectorAll('[data-count-up]');
-
-        counters.forEach((counter) => {
-            const target = Number(counter.dataset.countUp || '0');
-            const prefix = counter.dataset.prefix || '';
-            const duration = 850;
-            const start = performance.now();
-
-            function tick(now) {
-                const progress = Math.min((now - start) / duration, 1);
-                const eased = 1 - Math.pow(1 - progress, 4);
-                const current = Math.round(target * eased);
-
-                counter.textContent = `${prefix}${formatter.format(current)}`;
-
-                if (progress < 1) {
-                    requestAnimationFrame(tick);
-                }
+        // Counter animation di-handle global oleh animations.js (window.AppAnim).
+        // Tapi karena dashboard.js dimuat SEBELUM animations.js (urutan di scripts.php),
+        // dan dashboard pakai atribut lama "data-count-up", kita cuma map ke data-counter
+        // jika ada. Migrasi atribut sudah dilakukan di view, jadi function ini cuma fallback.
+        const legacy = document.querySelectorAll('[data-count-up]');
+        if (!legacy.length) {
+            return;
+        }
+        legacy.forEach((el) => {
+            const target = el.getAttribute('data-count-up') || '0';
+            const prefix = el.getAttribute('data-prefix') || '';
+            el.setAttribute('data-counter', target);
+            if (prefix) {
+                el.setAttribute('data-counter-prefix', prefix);
             }
-
-            requestAnimationFrame(tick);
+            const format = prefix.toLowerCase().includes('rp') ? 'rupiah' : 'thousand';
+            el.setAttribute('data-counter-format', format);
+            el.removeAttribute('data-count-up');
         });
+
+        if (window.AppAnim && typeof window.AppAnim.initCounters === 'function') {
+            window.AppAnim.initCounters();
+        }
     }
 
     document.addEventListener('DOMContentLoaded', () => {

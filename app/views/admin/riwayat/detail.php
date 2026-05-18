@@ -2,7 +2,7 @@
 $title = $title ?? 'Detail Transaksi';
 $activeMenu = $activeMenu ?? 'riwayat';
 
-$pageCss = ['assets/css/riwayat.css?v=1' . time()];
+$pageCss = ['assets/css/riwayat.css'];
 
 $transaksi = $transaksi ?? [];
 $items = $items ?? ($detailTransaksi ?? []);
@@ -117,7 +117,7 @@ $summaryCards = [
 <?php require APP_PATH . '/views/layouts/navbar.php'; ?>
 
 <div class="riwayat-page">
-    <section class="riwayat-hero">
+    <section class="riwayat-hero" data-aos="fade-down" data-aos-duration="700">
         <div class="riwayat-hero-content">
             <span class="riwayat-eyebrow">
                 <i class="ti ti-receipt"></i>
@@ -144,9 +144,9 @@ $summaryCards = [
         </div>
     </section>
 
-    <section class="riwayat-summary summary-count-3">
-        <?php foreach ($summaryCards as $card): ?>
-            <article class="riwayat-summary-card <?= app_e($card['class']) ?>">
+    <section class="riwayat-summary summary-count-3" data-aos="fade-up" data-aos-delay="140">
+        <?php foreach ($summaryCards as $idx => $card): ?>
+            <article class="riwayat-summary-card <?= app_e($card['class']) ?>" data-aos="zoom-in" data-aos-delay="<?= app_e((string) (80 + ((int) ($idx ?? 0)) * 100)) ?>">
                 <span class="riwayat-summary-icon">
                     <i class="<?= app_e($card['icon']) ?>"></i>
                 </span>
@@ -160,7 +160,7 @@ $summaryCards = [
         <?php endforeach; ?>
     </section>
 
-    <section class="riwayat-detail-layout">
+    <section class="riwayat-detail-layout" data-aos="fade-up" data-aos-delay="200">
         <article class="riwayat-detail-panel">
             <div class="riwayat-detail-head">
                 <div>
@@ -263,7 +263,7 @@ $summaryCards = [
         </aside>
     </section>
 
-    <section class="riwayat-panel">
+    <section class="riwayat-panel" data-aos="fade-up" data-aos-delay="200">
         <div class="riwayat-panel-header">
             <div>
                 <span>Item</span>

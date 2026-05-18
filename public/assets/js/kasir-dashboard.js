@@ -1,6 +1,11 @@
 (function () {
     'use strict';
 
+    /**
+     * Counter animation di kasir dashboard udah di-handle global oleh animations.js
+     * (data-counter). File ini cuma fallback buat backward compatibility kalau
+     * view masih pake atribut lama [data-count-up].
+     */
     function ready(callback) {
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', callback);
@@ -10,27 +15,29 @@
         callback();
     }
 
-    function animateCount(element) {
-        const target = Number(element.dataset.countUp || 0);
-        const duration = 650;
-        const start = performance.now();
-
-        function tick(now) {
-            const progress = Math.min((now - start) / duration, 1);
-            const eased = 1 - Math.pow(1 - progress, 3);
-            const current = Math.round(target * eased);
-
-            element.textContent = String(current);
-
-            if (progress < 1) {
-                requestAnimationFrame(tick);
-            }
+    function migrateLegacyCounters() {
+        const legacy = document.querySelectorAll('[data-count-up]');
+        if (!legacy.length) {
+            return;
         }
 
-        requestAnimationFrame(tick);
+        legacy.forEach(function (el) {
+            const target = el.getAttribute('data-count-up') || '0';
+            const prefix = el.getAttribute('data-prefix') || '';
+            const format = prefix.toLowerCase().includes('rp') ? 'rupiah' : 'thousand';
+
+            el.setAttribute('data-counter', target);
+            if (prefix) {
+                el.setAttribute('data-counter-prefix', prefix);
+            }
+            el.setAttribute('data-counter-format', format);
+            el.removeAttribute('data-count-up');
+        });
+
+        if (window.AppAnim && typeof window.AppAnim.initCounters === 'function') {
+            window.AppAnim.initCounters();
+        }
     }
 
-    ready(function () {
-        document.querySelectorAll('[data-count-up]').forEach(animateCount);
-    });
+    ready(migrateLegacyCounters);
 })();

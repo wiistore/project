@@ -1086,3 +1086,201 @@
         width: 100%;
     }
 }
+
+
+
+/* =============================================================
+   BARCODE FEATURE STYLES
+   ============================================================= */
+
+/* Form: Input wrap with action button */
+.barang-input-wrap.barang-input-wrap-with-action {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    overflow: hidden;
+}
+
+.barang-input-wrap.barang-input-wrap-with-action input {
+    flex: 1;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.barang-btn-generate {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 14px;
+    border-radius: 0 10px 10px 0;
+    background: #128048;
+    color: #ffffff;
+    border: 1px solid #128048;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.barang-btn-generate:hover:not(:disabled) {
+    background: #0e6a3a;
+}
+
+.barang-btn-generate:active:not(:disabled) {
+    transform: scale(0.97);
+}
+
+.barang-btn-generate:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.barang-btn-generate i {
+    font-size: 16px;
+}
+
+@media (max-width: 480px) {
+    .barang-btn-generate span {
+        display: none;
+    }
+
+    .barang-btn-generate {
+        padding: 0 10px;
+    }
+}
+
+/* Form: Live barcode preview */
+.barang-barcode-preview {
+    margin-top: 10px;
+    padding: 12px;
+    background: #ffffff;
+    border: 1px dashed #cbd5e1;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 90px;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.barang-barcode-preview.is-empty {
+    background: #f8fafc;
+    border-style: dashed;
+}
+
+.barang-barcode-preview .barang-barcode-svg {
+    max-width: 100%;
+    height: auto;
+}
+
+.barang-barcode-empty-text {
+    font-size: 12px;
+    color: #64748b;
+    font-style: italic;
+}
+
+/* List: Checkbox column */
+.barang-col-check {
+    width: 36px;
+    text-align: center;
+}
+
+.barang-checkbox {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: #128048;
+}
+
+.barang-checkbox:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+}
+
+/* List: Bulk action bar */
+.barang-bulk-bar {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 18px;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+    border: 1px solid #a7f3d0;
+    border-radius: 12px;
+    animation: barang-bulk-slide-down 0.3s ease;
+}
+
+.barang-bulk-bar.is-visible {
+    display: flex;
+}
+
+.barang-bulk-info {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: #065f46;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.barang-bulk-info i {
+    font-size: 20px;
+}
+
+.barang-bulk-info strong {
+    color: #064e3b;
+    font-weight: 800;
+    font-size: 15px;
+}
+
+@keyframes barang-bulk-slide-down {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* List: Action button - Print label */
+.barang-action-btn.action-print {
+    background: #eff6ff;
+    color: #1e40af;
+    border-color: #bfdbfe;
+}
+
+.barang-action-btn.action-print:hover {
+    background: #dbeafe;
+    color: #1e3a8a;
+    border-color: #93c5fd;
+}
+
+/* Loader spin (untuk tombol generate yang lagi loading) */
+.barang-btn-generate i.ti-loader-2 {
+    animation: barang-spin 0.8s linear infinite;
+}
+
+@keyframes barang-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .barang-bulk-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .barang-bulk-bar .barang-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

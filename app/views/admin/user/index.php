@@ -2,7 +2,7 @@
 $title = $title ?? 'Data User Kasir';
 $activeMenu = $activeMenu ?? 'user';
 
-$pageCss = ['assets/css/user.css?v=1' . time()];
+$pageCss = ['assets/css/user.css'];
 
 $__viewData = get_defined_vars();
 
@@ -123,7 +123,7 @@ $summaryCards = [
         </div>
     <?php endif; ?>
 
-    <section class="user-hero">
+    <section class="user-hero" data-aos="fade-down" data-aos-duration="700">
         <div class="user-hero-content">
             <span class="user-eyebrow">
                 <i class="ti ti-users"></i>
@@ -150,9 +150,9 @@ $summaryCards = [
         </div>
     </section>
 
-    <section class="user-summary summary-count-4">
-        <?php foreach ($summaryCards as $card): ?>
-            <article class="user-summary-card <?= app_e($card['class']) ?>">
+    <section class="user-summary summary-count-4" data-aos="fade-up" data-aos-delay="140">
+        <?php foreach ($summaryCards as $idx => $card): ?>
+            <article class="user-summary-card <?= app_e($card['class']) ?>" data-aos="zoom-in" data-aos-delay="<?= app_e((string) (80 + ((int) ($idx ?? 0)) * 100)) ?>">
                 <span class="user-summary-icon">
                     <i class="<?= app_e($card['icon']) ?>"></i>
                 </span>
@@ -166,7 +166,7 @@ $summaryCards = [
         <?php endforeach; ?>
     </section>
 
-    <section class="user-panel">
+    <section class="user-panel" data-aos="fade-up" data-aos-delay="200">
         <div class="user-panel-header">
             <div>
                 <span>Akun</span>
@@ -397,7 +397,7 @@ $summaryCards = [
     </section>
 </div>
 
-<script src="<?= app_e(app_asset('assets/js/user.js')) ?>"></script>
+<script src="<?= app_e(app_asset_versioned('assets/js/user.js')) ?>"></script>
 
 <?php require APP_PATH . '/views/layouts/footer.php'; ?>
 <?php require APP_PATH . '/views/layouts/scripts.php'; ?>

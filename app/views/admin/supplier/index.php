@@ -2,7 +2,7 @@
 $title = $title ?? 'Data Supplier';
 $activeMenu = $activeMenu ?? 'supplier';
 
-$pageCss = ['assets/css/supplier.css?v=1' . time()];
+$pageCss = ['assets/css/supplier.css'];
 
 $suppliers = $suppliers ?? [];
 $flash = $flash ?? [];
@@ -104,7 +104,7 @@ if (!function_exists('supplier_short')) {
         </div>
     <?php endif; ?>
 
-    <section class="supplier-hero">
+    <section class="supplier-hero" data-aos="fade-down" data-aos-duration="700">
         <div class="supplier-hero-content">
             <span class="supplier-eyebrow">
                 <i class="ti ti-truck-delivery"></i>
@@ -131,9 +131,9 @@ if (!function_exists('supplier_short')) {
         </div>
     </section>
 
-    <section class="supplier-summary <?= app_e($summaryClass) ?>" data-animate="fade-up" data-delay="140">
-        <?php foreach ($summaryCards as $card): ?>
-            <article class="supplier-summary-card <?= app_e($card['class']) ?>">
+    <section class="supplier-summary <?= app_e($summaryClass) ?>" data-aos="fade-up" data-aos-delay="140">
+        <?php foreach ($summaryCards as $idx => $card): ?>
+            <article class="supplier-summary-card <?= app_e($card['class']) ?>" data-aos="zoom-in" data-aos-delay="<?= app_e((string) (80 + ((int) ($idx ?? 0)) * 100)) ?>">
                 <span class="supplier-summary-icon">
                     <i class="<?= app_e($card['icon']) ?>"></i>
                 </span>
@@ -147,7 +147,7 @@ if (!function_exists('supplier_short')) {
         <?php endforeach; ?>
     </section>
 
-    <section class="supplier-panel">
+    <section class="supplier-panel" data-aos="fade-up" data-aos-delay="200">
         <div class="supplier-panel-header">
             <div>
                 <span>Inventori</span>
@@ -341,7 +341,7 @@ if (!function_exists('supplier_short')) {
     </section>
 </div>
 
-<script src="<?= app_e(app_asset('assets/js/supplier.js')) ?>"></script>
+<script src="<?= app_e(app_asset_versioned('assets/js/supplier.js')) ?>"></script>
 
 <?php require APP_PATH . '/views/layouts/footer.php'; ?>
 <?php require APP_PATH . '/views/layouts/scripts.php'; ?>

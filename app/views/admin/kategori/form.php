@@ -28,7 +28,7 @@ if (!function_exists('kategori_field_error')) {
 <?php require APP_PATH . '/views/layouts/navbar.php'; ?>
 
 <div class="kategori-page">
-    <section class="kategori-hero kategori-form-hero">
+    <section class="kategori-hero kategori-form-hero" data-aos="fade-down" data-aos-duration="700">
         <div class="kategori-hero-content">
             <span class="kategori-eyebrow">
                 <i class="<?= $isEdit ? 'ti ti-edit' : 'ti ti-folder-plus' ?>"></i>
@@ -53,7 +53,7 @@ if (!function_exists('kategori_field_error')) {
         </div>
     </section>
 
-    <section class="kategori-form-layout">
+    <section class="kategori-form-layout" data-aos="fade-up" data-aos-delay="150">
         <article class="kategori-form-card">
             <div class="kategori-form-head">
                 <div>
@@ -183,7 +183,7 @@ if (!function_exists('kategori_field_error')) {
     </section>
 </div>
 
-<script src="<?= app_e(app_asset('assets/js/kategori.js')) ?>"></script>
+<script src="<?= app_e(app_asset_versioned('assets/js/kategori.js')) ?>"></script>
 
 <?php require APP_PATH . '/views/layouts/footer.php'; ?>
 <?php require APP_PATH . '/views/layouts/scripts.php'; ?>

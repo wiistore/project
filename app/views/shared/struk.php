@@ -1,7 +1,7 @@
 <?php
 $title = $title ?? 'Struk Transaksi';
 $activeMenu = $activeMenu ?? 'transaksi';
-$pageCss = ['assets/css/struk.css?v=1' . time()];
+$pageCss = ['assets/css/struk.css'];
 
 $transaksi = $transaksi ?? [];
 $items = $items ?? ($detailTransaksi ?? []);
@@ -242,6 +242,6 @@ $receiptText = implode("\n", $receiptLines);
 
 <?php require APP_PATH . '/views/layouts/footer.php'; ?>
 
-<script src="<?= app_e(app_asset('assets/js/struk.js')) ?>"></script>
+<script src="<?= app_e(app_asset_versioned('assets/js/struk.js')) ?>"></script>
 
 <?php require APP_PATH . '/views/layouts/scripts.php'; ?>

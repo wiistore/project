@@ -111,28 +111,6 @@ class BarangController extends Controller
         $this->redirect('/admin/barang');
     }
 
-    public function detail($id): void
-    {
-        // Cek akses
-        $this->requireRole('admin');
-
-        $id = (int) $id;
-        $barang = $this->barangModel->findById($id);
-
-        if (!$barang) {
-            Session::setFlash('error', 'Barang tidak ditemukan.');
-            $this->redirect('/admin/barang');
-        }
-
-        // Tampilkan detail
-        $this->view('admin/barang/detail', [
-            'title' => 'Detail Barang',
-            'activeMenu' => 'barang',
-            'user' => Session::user(),
-            'barang' => $barang,
-        ]);
-    }
-
     public function edit($id): void
     {
         // Cek akses
@@ -303,11 +281,122 @@ class BarangController extends Controller
 
     private function generateBarcode(): string
     {
-        // Generate barcode internal
-        do {
-            $barcode = 'KPS' . date('Ymd') . random_int(1000, 9999);
-        } while ($this->barangModel->barcodeExists($barcode));
+        // Generate barcode internal sequential (KPS0000001, KPS0000002, dst)
+        return $this->barangModel->generateNextBarcode('KPS', 7);
+    }
 
-        return $barcode;
+    /**
+     * Endpoint AJAX: GET /admin/barang/generate-barcode
+     * Return JSON {barcode: "KPS0000123"} buat tombol "Generate" di form.
+     */
+    public function generateBarcodeAjax(): void
+    {
+        $this->requireRole('admin');
+
+        $barcode = $this->generateBarcode();
+
+        if (class_exists('Response') && method_exists('Response', 'json')) {
+            Response::json([
+                'success' => true,
+                'barcode' => $barcode,
+            ]);
+            return;
+        }
+
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'success' => true,
+            'barcode' => $barcode,
+        ]);
+        exit;
+    }
+
+    /**
+     * Halaman cetak label barcode untuk 1 barang (dengan opsi qty).
+     * URL: /admin/barang/label/{id}?qty=24
+     */
+    public function label($id): void
+    {
+        $this->requireRole('admin');
+
+        $id = (int) $id;
+        $barang = $this->barangModel->findById($id);
+
+        if (!$barang) {
+            Session::setFlash('error', 'Barang tidak ditemukan.');
+            $this->redirect('/admin/barang');
+        }
+
+        if (empty($barang['barcode'])) {
+            Session::setFlash('error', 'Barang ini belum punya barcode. Edit barang dulu untuk generate barcode.');
+            $this->redirect('/admin/barang');
+        }
+
+        $qty = isset($_GET['qty']) ? (int) $_GET['qty'] : 24;
+        $qty = max(1, min(96, $qty));
+
+        // Bikin array item yang akan dicetak (qty x 1 barang)
+        $items = [];
+        for ($i = 0; $i < $qty; $i++) {
+            $items[] = $barang;
+        }
+
+        $this->view('admin/barang/label', [
+            'title' => 'Cetak Label Barcode',
+            'activeMenu' => 'barang',
+            'user' => Session::user(),
+            'items' => $items,
+            'mode' => 'single',
+            'sourceBarang' => $barang,
+            'qty' => $qty,
+        ]);
+    }
+
+    /**
+     * Halaman cetak label bulk - pilih banyak barang sekaligus.
+     * URL: GET /admin/barang/label-bulk?ids=1,2,3
+     *      atau POST dengan field ids[]
+     */
+    public function labelBulk(): void
+    {
+        $this->requireRole('admin');
+
+        // Ambil ids dari GET atau POST
+        $rawIds = [];
+
+        if (isset($_POST['ids']) && is_array($_POST['ids'])) {
+            $rawIds = $_POST['ids'];
+        } elseif (isset($_GET['ids'])) {
+            $rawIds = is_array($_GET['ids'])
+                ? $_GET['ids']
+                : explode(',', (string) $_GET['ids']);
+        }
+
+        $ids = array_values(array_unique(array_filter(array_map('intval', $rawIds), static fn ($id) => $id > 0)));
+
+        if (empty($ids)) {
+            Session::setFlash('error', 'Pilih minimal 1 barang dulu untuk cetak label.');
+            $this->redirect('/admin/barang');
+        }
+
+        $barangs = $this->barangModel->findManyByIds($ids);
+
+        // Filter: hanya yang punya barcode
+        $barangs = array_values(array_filter($barangs, static fn ($b) => !empty($b['barcode'])));
+
+        if (empty($barangs)) {
+            Session::setFlash('error', 'Tidak ada barang dengan barcode valid yang dipilih.');
+            $this->redirect('/admin/barang');
+        }
+
+        $this->view('admin/barang/label', [
+            'title' => 'Cetak Label Barcode (Bulk)',
+            'activeMenu' => 'barang',
+            'user' => Session::user(),
+            'items' => $barangs,
+            'mode' => 'bulk',
+            'sourceBarang' => null,
+            'qty' => count($barangs),
+        ]);
     }
 }

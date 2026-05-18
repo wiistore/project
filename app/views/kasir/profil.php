@@ -78,7 +78,7 @@ if (!function_exists('profil_field_error')) {
         </div>
     <?php endif; ?>
 
-    <section class="profil-hero">
+    <section class="profil-hero" data-aos="fade-down" data-aos-duration="700">
         <div class="profil-hero-content">
             <span class="profil-eyebrow">
                 <i class="ti ti-user-circle"></i>
@@ -105,7 +105,7 @@ if (!function_exists('profil_field_error')) {
         </div>
     </section>
 
-    <section class="profil-overview">
+    <section class="profil-overview" data-aos="fade-up" data-aos-delay="140">
         <article class="profil-card profil-identity-card">
             <div class="profil-avatar">
                 <i class="ti ti-user"></i>
@@ -153,7 +153,7 @@ if (!function_exists('profil_field_error')) {
         </article>
     </section>
 
-    <section class="profil-layout profil-password-only">
+    <section class="profil-layout profil-password-only" data-aos="fade-up" data-aos-delay="200">
         <article class="profil-card profil-form-card">
             <div class="profil-card-head">
                 <div>
@@ -324,7 +324,7 @@ if (!function_exists('profil_field_error')) {
     </section>
 </div>
 
-<script src="<?= app_e(app_asset('assets/js/profil.js')) ?>"></script>
+<script src="<?= app_e(app_asset_versioned('assets/js/profil.js')) ?>"></script>
 
 <?php require APP_PATH . '/views/layouts/footer.php'; ?>
 <?php require APP_PATH . '/views/layouts/scripts.php'; ?>
