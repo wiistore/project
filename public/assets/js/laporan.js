@@ -44,6 +44,20 @@
         return Object.assign({
             responsive: true,
             maintainAspectRatio: false,
+            animation: {
+                duration: 1200,
+                easing: 'easeOutQuart',
+            },
+            animations: {
+                y: {
+                    from: function (ctx) {
+                        if (ctx.type === 'data' && ctx.mode === 'default' && !ctx.dropped) {
+                            ctx.dropped = true;
+                            return ctx.chart.scales.y.getPixelForValue(0);
+                        }
+                    },
+                },
+            },
             plugins: {
                 legend: {
                     labels: {
@@ -138,6 +152,12 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 cutout: '68%',
+                animation: {
+                    animateRotate: true,
+                    animateScale: true,
+                    duration: 1300,
+                    easing: 'easeOutBack',
+                },
                 plugins: {
                     legend: {
                         position: 'bottom',
@@ -185,6 +205,16 @@
             responsive: true,
             maintainAspectRatio: false,
             indexAxis: 'y',
+            animation: {
+                duration: 1200,
+                easing: 'easeOutQuart',
+                delay: function (ctx) {
+                    if (ctx.type === 'data' && ctx.mode === 'default') {
+                        return ctx.dataIndex * 80;
+                    }
+                    return 0;
+                },
+            },
             plugins: {
                 legend: {
                     display: false

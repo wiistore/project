@@ -58,6 +58,34 @@ if (!function_exists('app_asset')) {
     }
 }
 
+if (!function_exists('app_asset_versioned')) {
+    /**
+     * Generate URL aset dengan cache buster ?v=filemtime.
+     * Browser akan cache file-nya, dan otomatis fetch ulang kalau file berubah.
+     * Kalau path udah ada query string, biarin apa adanya.
+     */
+    function app_asset_versioned(string $path): string
+    {
+        // Bersihin query string lama yang ada di path (pattern lama: ?v=time())
+        $cleanPath = strtok($path, '?');
+
+        // Cari file fisik di public folder
+        $publicPath = defined('PUBLIC_PATH') ? PUBLIC_PATH : '';
+        $diskPath = $publicPath . DIRECTORY_SEPARATOR . ltrim((string) $cleanPath, '/');
+
+        $version = '1';
+
+        if ($publicPath !== '' && is_file($diskPath)) {
+            $mtime = filemtime($diskPath);
+            if ($mtime !== false) {
+                $version = (string) $mtime;
+            }
+        }
+
+        return app_url((string) $cleanPath) . '?v=' . $version;
+    }
+}
+
 if (!function_exists('app_user_name')) {
     function app_user_name(?array $user): string
     {
@@ -112,11 +140,15 @@ if (!function_exists('app_is_active')) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" rel="stylesheet">
 
-    <link rel="stylesheet" href="<?= app_e(app_asset('assets/css/app.css')) ?>">
-    <link rel="stylesheet" href="<?= app_e(app_asset('assets/css/components.css')) ?>">
+    <link rel="stylesheet" href="<?= app_e(app_asset_versioned('assets/css/app.css')) ?>">
+    <link rel="stylesheet" href="<?= app_e(app_asset_versioned('assets/css/components.css')) ?>">
+
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
+
+    <link rel="stylesheet" href="<?= app_e(app_asset_versioned('assets/css/animations.css')) ?>">
 
     <?php foreach ($pageCss as $cssFile): ?>
-        <link rel="stylesheet" href="<?= app_e(app_asset((string) $cssFile)) ?>">
+        <link rel="stylesheet" href="<?= app_e(app_asset_versioned((string) $cssFile)) ?>">
     <?php endforeach; ?>
 </head>
 <body class="app-body">

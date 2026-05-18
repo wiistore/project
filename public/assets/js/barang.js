@@ -202,15 +202,43 @@
     }
 
     function initDeleteConfirm() {
-        const forms = Array.from(document.querySelectorAll('[data-barang-delete-form]'));
+        const triggers = Array.from(document.querySelectorAll('[data-barang-delete-trigger]'));
+        const legacyForms = Array.from(document.querySelectorAll('[data-barang-delete-form][data-confirm-title]'));
 
-        if (!forms.length) {
+        if (!triggers.length && !legacyForms.length) {
             return;
         }
 
         const modal = createConfirmModal();
 
-        forms.forEach(function (form) {
+        // Pattern baru: tombol trigger + hidden form (karena tabel di dalam form bulk)
+        triggers.forEach(function (trigger) {
+            trigger.addEventListener('click', function (event) {
+                event.preventDefault();
+
+                const url = trigger.getAttribute('data-delete-url') || '';
+                if (!url) {
+                    return;
+                }
+
+                // Cari hidden form by URL match (action attribute)
+                const matchingId = url.split('/').pop();
+                const targetForm = document.querySelector('[data-barang-delete-form][data-delete-id="' + matchingId + '"]');
+
+                if (!targetForm) {
+                    console.warn('Delete form tidak ditemukan untuk URL:', url);
+                    return;
+                }
+
+                // Tempel meta confirm dari trigger ke form, lalu open modal
+                targetForm.dataset.confirmTitle = trigger.dataset.confirmTitle || 'Hapus / Nonaktifkan Barang';
+                targetForm.dataset.confirmMessage = trigger.dataset.confirmMessage || 'Barang akan diproses. Lanjut?';
+                modal.open(targetForm);
+            });
+        });
+
+        // Pattern lama (backward compat): submit form langsung di-intercept
+        legacyForms.forEach(function (form) {
             form.addEventListener('submit', function (event) {
                 if (form.dataset.confirmed === 'true') {
                     return;
@@ -222,9 +250,221 @@
         });
     }
 
+    /* =========================================================
+     * BARCODE: Live preview + Generate button + Scanner support
+     * ========================================================= */
+
+    function renderBarcodePreview(value) {
+        const wrap = document.querySelector('[data-barang-barcode-preview]');
+        const svg = document.getElementById('barangBarcodePreview');
+
+        if (!svg || !wrap) {
+            return;
+        }
+
+        const trimmed = String(value || '').trim();
+
+        // Reset SVG biar render ulang clean
+        svg.innerHTML = '';
+        svg.removeAttribute('width');
+        svg.removeAttribute('height');
+        svg.removeAttribute('viewBox');
+
+        if (trimmed === '') {
+            wrap.classList.add('is-empty');
+            return;
+        }
+
+        if (typeof window.JsBarcode === 'undefined') {
+            // Fallback: tampilin teks polos
+            wrap.classList.remove('is-empty');
+            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            text.setAttribute('x', '10');
+            text.setAttribute('y', '24');
+            text.setAttribute('font-family', 'monospace');
+            text.setAttribute('font-size', '14');
+            text.textContent = trimmed;
+            svg.appendChild(text);
+            return;
+        }
+
+        wrap.classList.remove('is-empty');
+
+        try {
+            window.JsBarcode(svg, trimmed, {
+                format: 'CODE128',
+                width: 2,
+                height: 60,
+                displayValue: true,
+                fontSize: 14,
+                margin: 4,
+                background: '#ffffff',
+                lineColor: '#0f172a',
+            });
+        } catch (e) {
+            // JsBarcode kadang reject value invalid (mis. terlalu pendek / karakter aneh).
+            // Tampilin teks fallback aja.
+            console.warn('Barcode preview gagal:', e);
+            wrap.classList.add('is-empty');
+        }
+    }
+
+    function initBarcodeForm() {
+        const input = document.querySelector('[data-barang-barcode-input]');
+        const generateBtn = document.querySelector('[data-barang-generate-barcode]');
+
+        if (!input) {
+            return;
+        }
+
+        // Live preview saat user ngetik / scan / paste
+        input.addEventListener('input', function () {
+            renderBarcodePreview(input.value);
+        });
+
+        // Initial render kalau value udah ada (misal mode edit)
+        renderBarcodePreview(input.value);
+
+        // Tombol Generate -> AJAX ke server
+        if (generateBtn) {
+            generateBtn.addEventListener('click', async function () {
+                const url = generateBtn.getAttribute('data-generate-url');
+
+                if (!url) {
+                    return;
+                }
+
+                generateBtn.disabled = true;
+                const originalHtml = generateBtn.innerHTML;
+                generateBtn.innerHTML = '<i class="ti ti-loader-2"></i> <span>Generating...</span>';
+
+                try {
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                        credentials: 'same-origin',
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('HTTP ' + response.status);
+                    }
+
+                    const data = await response.json();
+
+                    if (data && data.success && data.barcode) {
+                        input.value = data.barcode;
+                        renderBarcodePreview(data.barcode);
+                        input.dispatchEvent(new Event('change', { bubbles: true }));
+                    } else {
+                        alert('Gagal generate barcode. Coba refresh halaman.');
+                    }
+                } catch (error) {
+                    console.error('Generate barcode error:', error);
+                    alert('Tidak bisa terhubung ke server untuk generate barcode.');
+                } finally {
+                    generateBtn.disabled = false;
+                    generateBtn.innerHTML = originalHtml;
+                }
+            });
+        }
+
+        // Scanner USB detection: kalo input dapet sequence cepat + Enter, anggap udah dari scanner
+        // Auto blur Enter biar form gak ke-submit cuma karena scan
+        let lastKeyTime = 0;
+        input.addEventListener('keydown', function (event) {
+            const now = Date.now();
+            const delta = now - lastKeyTime;
+            lastKeyTime = now;
+
+            if (event.key === 'Enter') {
+                // Kalau Enter dateng dari scanner (interval cepat), prevent submit form
+                // tapi tetep biarin user manual ngetik + tab/click submit
+                if (delta < 60 && input.value.length >= 4) {
+                    event.preventDefault();
+                    // Pindahkan focus ke field berikutnya (nama)
+                    const nextField = document.getElementById('nama');
+                    if (nextField) {
+                        nextField.focus();
+                    }
+                }
+            }
+        });
+    }
+
+    /* =========================================================
+     * BARCODE: List page - bulk select + cetak label
+     * ========================================================= */
+    function initBarangBulkLabel() {
+        const checkboxes = Array.from(document.querySelectorAll('[data-barang-checkbox]'));
+        const selectAll = document.querySelector('[data-barang-select-all]');
+        const bulkForm = document.querySelector('[data-barang-bulk-label-form]');
+        const bulkButton = document.querySelector('[data-barang-bulk-label-btn]');
+        const bulkCount = document.querySelector('[data-barang-bulk-count]');
+        const bulkBar = document.querySelector('[data-barang-bulk-bar]');
+
+        if (!checkboxes.length || !bulkForm) {
+            return;
+        }
+
+        function refreshBulkState() {
+            const selected = checkboxes.filter(function (cb) { return cb.checked; });
+            const count = selected.length;
+
+            if (bulkCount) {
+                bulkCount.textContent = String(count);
+            }
+
+            if (bulkButton) {
+                bulkButton.disabled = count === 0;
+            }
+
+            if (bulkBar) {
+                bulkBar.classList.toggle('is-visible', count > 0);
+            }
+
+            if (selectAll) {
+                selectAll.checked = count > 0 && count === checkboxes.length;
+                selectAll.indeterminate = count > 0 && count < checkboxes.length;
+            }
+        }
+
+        checkboxes.forEach(function (cb) {
+            cb.addEventListener('change', refreshBulkState);
+        });
+
+        if (selectAll) {
+            selectAll.addEventListener('change', function () {
+                checkboxes.forEach(function (cb) {
+                    if (!cb.disabled) {
+                        cb.checked = selectAll.checked;
+                    }
+                });
+                refreshBulkState();
+            });
+        }
+
+        bulkForm.addEventListener('submit', function (event) {
+            // Form di-submit ke /admin/barang/label-bulk dengan ids[] = selected ids
+            const selected = checkboxes.filter(function (cb) { return cb.checked; });
+
+            if (selected.length === 0) {
+                event.preventDefault();
+                alert('Pilih minimal 1 barang dulu.');
+                return;
+            }
+        });
+
+        refreshBulkState();
+    }
+
     ready(function () {
         initBarangFilter();
         initPricePreview();
         initDeleteConfirm();
+        initBarcodeForm();
+        initBarangBulkLabel();
     });
 })();

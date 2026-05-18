@@ -2,7 +2,7 @@
 $title = $title ?? 'Tambah Restock';
 $activeMenu = $activeMenu ?? 'restock';
 
-$pageCss = ['assets/css/restock.css?v=1' . time()];
+$pageCss = ['assets/css/restock.css'];
 
 $formAction = $formAction ?? '/admin/restock/store';
 
@@ -39,7 +39,7 @@ if (!function_exists('restock_option_price')) {
 <?php require APP_PATH . '/views/layouts/navbar.php'; ?>
 
 <div class="restock-page">
-    <section class="restock-hero restock-form-hero">
+    <section class="restock-hero restock-form-hero" data-aos="fade-down" data-aos-duration="700">
         <div class="restock-hero-content">
             <span class="restock-eyebrow">
                 <i class="ti ti-stack-push"></i>
@@ -61,7 +61,7 @@ if (!function_exists('restock_option_price')) {
         </div>
     </section>
 
-    <section class="restock-form-layout">
+    <section class="restock-form-layout" data-aos="fade-up" data-aos-delay="150">
         <article class="restock-form-card">
             <div class="restock-form-head">
                 <div>
@@ -359,7 +359,7 @@ if (!function_exists('restock_option_price')) {
     </section>
 </div>
 
-<script src="<?= app_e(app_asset('assets/js/restock.js')) ?>"></script>
+<script src="<?= app_e(app_asset_versioned('assets/js/restock.js')) ?>"></script>
 
 <?php require APP_PATH . '/views/layouts/footer.php'; ?>
 <?php require APP_PATH . '/views/layouts/scripts.php'; ?>

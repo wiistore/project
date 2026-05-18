@@ -327,6 +327,36 @@
         });
     }
 
+    function findByExactBarcode(value) {
+        const target = String(value || '').trim();
+        if (target === '') {
+            return null;
+        }
+        return state.products.find(function (product) {
+            return String(product.barcode || '').trim() === target;
+        }) || null;
+    }
+
+    function findByExactKode(value) {
+        const target = String(value || '').trim();
+        if (target === '') {
+            return null;
+        }
+        return state.products.find(function (product) {
+            return String(product.kode_barang || '').trim() === target;
+        }) || null;
+    }
+
+    function flashStockEmpty(product) {
+        // Toast singkat pas scan barang yg habis
+        if (typeof window.AppToast !== 'undefined' && typeof window.AppToast.show === 'function') {
+            window.AppToast.show('Stok ' + (product.nama || 'barang') + ' habis.', 'error');
+            return;
+        }
+        // Fallback console
+        console.warn('Stok habis:', product.nama);
+    }
+
     function initSearch() {
         const input = document.querySelector('[data-pos-search]');
         const focusButton = document.querySelector('[data-pos-focus-search]');
@@ -335,30 +365,103 @@
             return;
         }
 
+        let lastKeyTime = 0;
+        let scanBuffer = '';
+
         input.addEventListener('input', applyProductFilter);
 
         input.addEventListener('keydown', function (event) {
+            const now = Date.now();
+            const delta = now - lastKeyTime;
+            lastKeyTime = now;
+
+            // Track scan buffer (deteksi input cepat = scanner USB)
+            if (event.key.length === 1) {
+                if (delta > 100) {
+                    scanBuffer = '';
+                }
+                scanBuffer += event.key;
+            }
+
             if (event.key !== 'Enter') {
                 return;
             }
 
             event.preventDefault();
 
-            const firstVisible = Array.from(document.querySelectorAll('[data-product-card]')).find(function (card) {
-                return !card.hidden && !card.disabled;
-            });
+            const value = input.value.trim();
+            if (value === '') {
+                scanBuffer = '';
+                return;
+            }
 
-            if (firstVisible) {
-                addToCart(firstVisible.dataset.productId);
+            // Prioritas 1: exact match by barcode (paling tepat buat scan kemasan pabrik)
+            let target = findByExactBarcode(value);
+
+            // Prioritas 2: exact match by kode_barang
+            if (!target) {
+                target = findByExactKode(value);
+            }
+
+            // Prioritas 3: fallback — first visible product yg match keyword
+            if (!target) {
+                const firstVisible = Array.from(document.querySelectorAll('[data-product-card]')).find(function (card) {
+                    return !card.hidden && !card.disabled;
+                });
+
+                if (firstVisible) {
+                    target = getProduct(firstVisible.dataset.productId);
+                }
+            }
+
+            scanBuffer = '';
+
+            if (!target) {
+                // Tidak ada match, kasih indikasi visual
+                input.classList.add('is-not-found');
+                setTimeout(function () { input.classList.remove('is-not-found'); }, 600);
+                return;
+            }
+
+            if (Number(target.stok) <= 0) {
+                flashStockEmpty(target);
                 input.value = '';
                 applyProductFilter();
+                input.focus();
+                return;
             }
+
+            addToCart(target.id);
+            input.value = '';
+            applyProductFilter();
+            input.focus();
         });
 
         if (focusButton) {
             focusButton.addEventListener('click', function () {
                 input.focus();
                 input.select();
+            });
+        }
+
+        // Auto-focus saat halaman load (kasir bisa langsung scan)
+        // Tunda dikit biar gak konflik sama autofocus elemen lain
+        setTimeout(function () {
+            if (document.activeElement === document.body || document.activeElement === null) {
+                input.focus();
+            }
+        }, 200);
+
+        // Re-focus search saat user klik area kosong cart panel (UX: tetep siap scan)
+        const productsPanel = document.querySelector('.pos-products-panel');
+        if (productsPanel) {
+            productsPanel.addEventListener('click', function (event) {
+                // Skip kalo click ke product card, button, atau input
+                const tag = event.target.tagName;
+                const isInteractive = event.target.closest('button, input, select, a, label, [data-product-card]');
+                if (!isInteractive && tag !== 'INPUT') {
+                    input.focus();
+                }
             });
         }
 

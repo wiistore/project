@@ -2,7 +2,7 @@
 $title = $title ?? 'Form Kasir';
 $activeMenu = $activeMenu ?? 'user';
 
-$pageCss = ['assets/css/user.css?v=1' . time()];
+$pageCss = ['assets/css/user.css'];
 
 $__viewData = get_defined_vars();
 
@@ -45,7 +45,7 @@ if (!function_exists('user_field_error')) {
 <?php require APP_PATH . '/views/layouts/navbar.php'; ?>
 
 <div class="user-page">
-    <section class="user-hero user-form-hero">
+    <section class="user-hero user-form-hero" data-aos="fade-down" data-aos-duration="700">
         <div class="user-hero-content">
             <span class="user-eyebrow">
                 <i class="<?= $isEdit ? 'ti ti-edit' : 'ti ti-user-plus' ?>"></i>
@@ -70,7 +70,7 @@ if (!function_exists('user_field_error')) {
         </div>
     </section>
 
-    <section class="user-form-layout">
+    <section class="user-form-layout" data-aos="fade-up" data-aos-delay="150">
         <article class="user-form-card">
             <div class="user-form-head">
                 <div>
@@ -288,7 +288,7 @@ if (!function_exists('user_field_error')) {
     </section>
 </div>
 
-<script src="<?= app_e(app_asset('assets/js/user.js')) ?>"></script>
+<script src="<?= app_e(app_asset_versioned('assets/js/user.js')) ?>"></script>
 
 <?php require APP_PATH . '/views/layouts/footer.php'; ?>
 <?php require APP_PATH . '/views/layouts/scripts.php'; ?>

@@ -2,7 +2,7 @@
 $title = $title ?? 'Data Kategori';
 $activeMenu = $activeMenu ?? 'kategori';
 
-$pageCss = ['assets/css/kategori.css?v=1' . time()];
+$pageCss = ['assets/css/kategori.css'];
 
 $kategoris = $kategoris ?? [];
 $flash = $flash ?? [];
@@ -84,7 +84,7 @@ if (!function_exists('kategori_short')) {
         </div>
     <?php endif; ?>
 
-    <section class="kategori-hero">
+    <section class="kategori-hero" data-aos="fade-down" data-aos-duration="700">
         <div class="kategori-hero-content">
             <span class="kategori-eyebrow">
                 <i class="ti ti-folder"></i>
@@ -111,8 +111,8 @@ if (!function_exists('kategori_short')) {
         </div>
     </section>
 
-    <section class="kategori-summary" data-animate="fade-up" data-delay="140">
-        <article class="kategori-summary-card summary-green">
+    <section class="kategori-summary" data-aos="fade-up" data-aos-delay="140">
+        <article class="kategori-summary-card summary-green" data-aos="zoom-in" data-aos-delay="80">
             <span class="kategori-summary-icon">
                 <i class="ti ti-folders"></i>
             </span>
@@ -124,7 +124,7 @@ if (!function_exists('kategori_short')) {
             </div>
         </article>
 
-        <article class="kategori-summary-card summary-blue">
+        <article class="kategori-summary-card summary-blue" data-aos="zoom-in" data-aos-delay="180">
             <span class="kategori-summary-icon">
                 <i class="ti ti-notes"></i>
             </span>
@@ -136,7 +136,7 @@ if (!function_exists('kategori_short')) {
             </div>
         </article>
 
-        <article class="kategori-summary-card summary-orange">
+        <article class="kategori-summary-card summary-orange" data-aos="zoom-in" data-aos-delay="280">
             <span class="kategori-summary-icon">
                 <i class="ti ti-note-off"></i>
             </span>
@@ -149,7 +149,7 @@ if (!function_exists('kategori_short')) {
         </article>
     </section>
 
-    <section class="kategori-panel">
+    <section class="kategori-panel" data-aos="fade-up" data-aos-delay="200">
         <div class="kategori-panel-header">
             <div>
                 <span>Inventori</span>
@@ -293,7 +293,7 @@ if (!function_exists('kategori_short')) {
     </section>
 </div>
 
-<script src="<?= app_e(app_asset('assets/js/kategori.js')) ?>"></script>
+<script src="<?= app_e(app_asset_versioned('assets/js/kategori.js')) ?>"></script>
 
 <?php require APP_PATH . '/views/layouts/footer.php'; ?>
 <?php require APP_PATH . '/views/layouts/scripts.php'; ?>

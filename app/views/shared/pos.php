@@ -3,7 +3,7 @@ $__view = get_defined_vars();
 
 $title = isset($__view['title']) ? (string) $__view['title'] : 'Transaksi POS';
 $activeMenu = 'transaksi';
-$pageCss = ['assets/css/pos.css?v=1' . time()];
+$pageCss = ['assets/css/pos.css'];
 
 $user = isset($__view['user']) && is_array($__view['user'])
     ? $__view['user']
@@ -127,7 +127,7 @@ require APP_PATH . '/views/layouts/navbar.php';
         </div>
     <?php endif; ?>
 
-    <section class="pos-hero">
+    <section class="pos-hero" data-aos="fade-down" data-aos-duration="700">
         <div class="pos-hero-content">
             <span class="pos-eyebrow">
                 <i class="ti ti-shopping-cart"></i>
@@ -162,45 +162,45 @@ require APP_PATH . '/views/layouts/navbar.php';
     </section>
 
     <section class="pos-summary summary-count-3">
-        <article class="pos-summary-card summary-green">
+        <article class="pos-summary-card summary-green" data-aos="zoom-in" data-aos-delay="80">
             <span class="pos-summary-icon">
                 <i class="ti ti-package"></i>
             </span>
 
             <div>
                 <small>Barang Aktif</small>
-                <strong><?= app_e((string) $totalBarangAktif) ?></strong>
+                <strong data-counter="<?= app_e((string) $totalBarangAktif) ?>" data-counter-format="thousand">0</strong>
                 <p>Semua barang aktif</p>
             </div>
         </article>
 
-        <article class="pos-summary-card summary-blue">
+        <article class="pos-summary-card summary-blue" data-aos="zoom-in" data-aos-delay="180">
             <span class="pos-summary-icon">
                 <i class="ti ti-packages"></i>
             </span>
 
             <div>
                 <small>Total Stok</small>
-                <strong><?= app_e((string) $totalStok) ?></strong>
+                <strong data-counter="<?= app_e((string) $totalStok) ?>" data-counter-format="thousand">0</strong>
                 <p>Akumulasi stok barang</p>
             </div>
         </article>
 
-        <article class="pos-summary-card summary-orange">
+        <article class="pos-summary-card summary-orange" data-aos="zoom-in" data-aos-delay="280">
             <span class="pos-summary-icon">
                 <i class="ti ti-shopping-bag-check"></i>
             </span>
 
             <div>
                 <small>Siap Dijual</small>
-                <strong><?= app_e((string) $totalBarangTersedia) ?></strong>
+                <strong data-counter="<?= app_e((string) $totalBarangTersedia) ?>" data-counter-format="thousand">0</strong>
                 <p>Stok lebih dari nol</p>
             </div>
         </article>
     </section>
 
     <section class="pos-layout">
-        <article class="pos-products-panel">
+        <article class="pos-products-panel" data-aos="fade-right" data-aos-delay="200">
             <div class="pos-panel-head">
                 <div>
                     <span>Produk</span>
@@ -328,7 +328,7 @@ require APP_PATH . '/views/layouts/navbar.php';
             <?php endif; ?>
         </article>
 
-        <aside class="pos-cart-panel">
+        <aside class="pos-cart-panel" data-aos="fade-left" data-aos-delay="250">
             <form action="<?= app_e(app_url($storeUrl)) ?>" method="POST" class="pos-form" data-pos-form>
                 <input type="hidden" name="cart_json" value="" data-cart-json>
 
@@ -455,6 +455,6 @@ require APP_PATH . '/views/layouts/navbar.php';
 
 <?php require APP_PATH . '/views/layouts/footer.php'; ?>
 
-<script src="<?= app_e(app_asset('assets/js/pos.js')) ?>"></script>
+<script src="<?= app_e(app_asset_versioned('assets/js/pos.js')) ?>"></script>
 
 <?php require APP_PATH . '/views/layouts/scripts.php'; ?>

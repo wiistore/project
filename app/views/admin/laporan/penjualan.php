@@ -2,7 +2,7 @@
 $title = $title ?? 'Laporan Penjualan';
 $activeMenu = $activeMenu ?? 'laporan';
 
-$pageCss = ['assets/css/laporan.css?v=1' . time()];
+$pageCss = ['assets/css/laporan.css'];
 
 $__viewData = get_defined_vars();
 
@@ -181,7 +181,7 @@ foreach ($metodePembayaran as $row) {
 <?php require APP_PATH . '/views/layouts/navbar.php'; ?>
 
 <div class="laporan-page">
-    <section class="laporan-hero">
+    <section class="laporan-hero" data-aos="fade-down" data-aos-duration="700">
         <div class="laporan-hero-content">
             <span class="laporan-eyebrow">
                 <i class="ti ti-cash"></i>
@@ -208,7 +208,7 @@ foreach ($metodePembayaran as $row) {
         </div>
     </section>
 
-    <section class="laporan-nav">
+    <section class="laporan-nav" data-aos="fade-up" data-aos-delay="100">
         <a href="<?= app_e(app_url('/admin/laporan')) ?>">
             <i class="ti ti-layout-dashboard"></i>
             Ringkasan
@@ -235,7 +235,7 @@ foreach ($metodePembayaran as $row) {
         </a>
     </section>
 
-    <section class="laporan-filter-panel">
+    <section class="laporan-filter-panel" data-aos="fade-up" data-aos-delay="150">
         <div>
             <span>Filter Periode</span>
             <h3>Atur Rentang Tanggal</h3>
@@ -264,9 +264,9 @@ foreach ($metodePembayaran as $row) {
         </form>
     </section>
 
-    <section class="laporan-summary summary-count-4">
-        <?php foreach ($summaryCards as $card): ?>
-            <article class="laporan-summary-card <?= app_e($card['class']) ?>">
+    <section class="laporan-summary summary-count-4" data-aos="fade-up" data-aos-delay="200">
+        <?php foreach ($summaryCards as $idx => $card): ?>
+            <article class="laporan-summary-card <?= app_e($card['class']) ?>" data-aos="zoom-in" data-aos-delay="<?= app_e((string) (80 + ((int) ($idx ?? 0)) * 100)) ?>">
                 <span class="laporan-summary-icon">
                     <i class="<?= app_e($card['icon']) ?>"></i>
                 </span>
@@ -280,7 +280,7 @@ foreach ($metodePembayaran as $row) {
         <?php endforeach; ?>
     </section>
 
-    <section class="laporan-chart-grid">
+    <section class="laporan-chart-grid" data-aos="zoom-in" data-aos-delay="250">
         <article class="laporan-chart-card laporan-chart-wide">
             <div class="laporan-card-head">
                 <div>
@@ -378,7 +378,7 @@ foreach ($metodePembayaran as $row) {
         </article>
     </section>
 
-    <section class="laporan-grid">
+    <section class="laporan-grid" data-aos="fade-up" data-aos-delay="300">
         <article class="laporan-panel">
             <div class="laporan-card-head">
                 <div>
@@ -551,7 +551,7 @@ foreach ($metodePembayaran as $row) {
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="<?= app_e(app_asset('assets/js/laporan.js')) ?>"></script>
+<script src="<?= app_e(app_asset_versioned('assets/js/laporan.js')) ?>"></script>
 
 <?php require APP_PATH . '/views/layouts/footer.php'; ?>
 <?php require APP_PATH . '/views/layouts/scripts.php'; ?>

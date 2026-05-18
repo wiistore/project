@@ -103,9 +103,12 @@ $router->post('/admin/kategori/delete/{id}', 'KategoriController@delete');
 */
 
 $router->get('/admin/barang', 'BarangController@index');
+$router->get('/admin/barang/generate-barcode', 'BarangController@generateBarcodeAjax');
+$router->get('/admin/barang/label/{id}', 'BarangController@label');
+$router->get('/admin/barang/label-bulk', 'BarangController@labelBulk');
+$router->post('/admin/barang/label-bulk', 'BarangController@labelBulk');
 $router->get('/admin/barang/create', 'BarangController@create');
 $router->post('/admin/barang/store', 'BarangController@store');
-$router->get('/admin/barang/detail/{id}', 'BarangController@detail');
 $router->get('/admin/barang/edit/{id}', 'BarangController@edit');
 $router->post('/admin/barang/update/{id}', 'BarangController@update');
 $router->post('/admin/barang/delete/{id}', 'BarangController@delete');

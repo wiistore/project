@@ -2,7 +2,7 @@
 $title = $title ?? 'Form Supplier';
 $activeMenu = $activeMenu ?? 'supplier';
 
-$pageCss = ['assets/css/supplier.css?v=1' . time()];
+$pageCss = ['assets/css/supplier.css'];
 
 $formAction = $formAction ?? '/admin/supplier/store';
 $formMode = $formMode ?? 'create';
@@ -33,7 +33,7 @@ if (!function_exists('supplier_field_error')) {
 <?php require APP_PATH . '/views/layouts/navbar.php'; ?>
 
 <div class="supplier-page">
-    <section class="supplier-hero supplier-form-hero">
+    <section class="supplier-hero supplier-form-hero" data-aos="fade-down" data-aos-duration="700">
         <div class="supplier-hero-content">
             <span class="supplier-eyebrow">
                 <i class="<?= $isEdit ? 'ti ti-edit' : 'ti ti-truck-delivery' ?>"></i>
@@ -58,7 +58,7 @@ if (!function_exists('supplier_field_error')) {
         </div>
     </section>
 
-    <section class="supplier-form-layout">
+    <section class="supplier-form-layout" data-aos="fade-up" data-aos-delay="150">
         <article class="supplier-form-card">
             <div class="supplier-form-head">
                 <div>
@@ -267,7 +267,7 @@ if (!function_exists('supplier_field_error')) {
     </section>
 </div>
 
-<script src="<?= app_e(app_asset('assets/js/supplier.js')) ?>"></script>
+<script src="<?= app_e(app_asset_versioned('assets/js/supplier.js')) ?>"></script>
 
 <?php require APP_PATH . '/views/layouts/footer.php'; ?>
 <?php require APP_PATH . '/views/layouts/scripts.php'; ?>

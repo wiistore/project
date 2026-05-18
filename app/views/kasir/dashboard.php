@@ -2,7 +2,7 @@
 $title = $title ?? 'Dashboard Kasir';
 $activeMenu = $activeMenu ?? 'dashboard';
 
-$pageCss = ['assets/css/kasir-dashboard.css?v1=' . time()];
+$pageCss = ['assets/css/kasir-dashboard.css'];
 
 $__viewData = get_defined_vars();
 
@@ -85,6 +85,8 @@ $summaryCards = [
         'value' => (string) $totalTransaksiHariIni,
         'desc' => 'Transaksi yang kamu proses',
         'count' => $totalTransaksiHariIni,
+        'format' => 'thousand',
+        'prefix' => '',
     ],
     [
         'class' => 'summary-blue',
@@ -92,7 +94,9 @@ $summaryCards = [
         'label' => 'Penjualan Hari Ini',
         'value' => kasir_dash_money($totalPenjualanHariIni),
         'desc' => 'Total omzet transaksi',
-        'count' => null,
+        'count' => (int) $totalPenjualanHariIni,
+        'format' => 'rupiah',
+        'prefix' => 'Rp ',
     ],
     [
         'class' => 'summary-orange',
@@ -101,6 +105,8 @@ $summaryCards = [
         'value' => (string) $totalItemHariIni,
         'desc' => 'Total item keluar',
         'count' => $totalItemHariIni,
+        'format' => 'thousand',
+        'prefix' => '',
     ],
 ];
 ?>
@@ -110,7 +116,7 @@ $summaryCards = [
 <?php require APP_PATH . '/views/layouts/navbar.php'; ?>
 
 <div class="kasir-dashboard-page">
-    <section class="kasir-hero">
+    <section class="kasir-hero" data-aos="fade-down" data-aos-duration="700">
         <div class="kasir-hero-content">
             <span class="kasir-eyebrow">
                 <i class="ti ti-cash-register"></i>
@@ -138,8 +144,8 @@ $summaryCards = [
     </section>
 
     <section class="kasir-summary summary-count-3">
-        <?php foreach ($summaryCards as $card): ?>
-            <article class="kasir-summary-card <?= app_e($card['class']) ?>">
+        <?php foreach ($summaryCards as $idx => $card): ?>
+            <article class="kasir-summary-card <?= app_e($card['class']) ?>" data-aos="zoom-in" data-aos-delay="<?= app_e((string) (80 + $idx * 100)) ?>">
                 <span class="kasir-summary-icon">
                     <i class="<?= app_e($card['icon']) ?>"></i>
                 </span>
@@ -147,11 +153,13 @@ $summaryCards = [
                 <div>
                     <small><?= app_e($card['label']) ?></small>
 
-                    <?php if ($card['count'] !== null): ?>
-                        <strong data-count-up="<?= app_e((string) $card['count']) ?>">0</strong>
-                    <?php else: ?>
-                        <strong><?= app_e($card['value']) ?></strong>
-                    <?php endif; ?>
+                    <strong
+                        data-counter="<?= app_e((string) ($card['count'] ?? 0)) ?>"
+                        data-counter-format="<?= app_e($card['format']) ?>"
+                        <?php if ($card['prefix'] !== ''): ?>
+                            data-counter-prefix="<?= app_e($card['prefix']) ?>"
+                        <?php endif; ?>
+                    ><?= app_e($card['prefix']) ?>0</strong>
 
                     <p><?= app_e($card['desc']) ?></p>
                 </div>
@@ -160,7 +168,7 @@ $summaryCards = [
     </section>
 
     <section class="kasir-layout">
-        <article class="kasir-panel kasir-transaction-panel">
+        <article class="kasir-panel kasir-transaction-panel" data-aos="fade-right" data-aos-delay="200">
             <div class="kasir-panel-head">
                 <div>
                     <span>Riwayat</span>
@@ -276,7 +284,7 @@ $summaryCards = [
             <?php endif; ?>
         </article>
 
-        <aside class="kasir-side">
+        <aside class="kasir-side" data-aos="fade-left" data-aos-delay="200">
             <div class="kasir-profile-card">
                 <span class="kasir-profile-icon">
                     <i class="ti ti-user-circle"></i>
@@ -330,7 +338,7 @@ $summaryCards = [
     </section>
 </div>
 
-<script src="<?= app_e(app_asset('assets/js/kasir-dashboard.js')) ?>"></script>
+<script src="<?= app_e(app_asset_versioned('assets/js/kasir-dashboard.js')) ?>"></script>
 
 <?php require APP_PATH . '/views/layouts/footer.php'; ?>
 <?php require APP_PATH . '/views/layouts/scripts.php'; ?>

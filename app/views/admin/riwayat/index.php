@@ -2,7 +2,7 @@
 $title = $title ?? 'Riwayat Transaksi';
 $activeMenu = $activeMenu ?? 'riwayat';
 
-$pageCss = ['assets/css/riwayat.css?v=1' . time()];
+$pageCss = ['assets/css/riwayat.css'];
 
 $transaksis = $transaksis ?? [];
 $summary = $summary ?? [];
@@ -150,7 +150,7 @@ $summaryClass = $summaryCount <= 4 ? 'summary-count-' . $summaryCount : 'summary
         </div>
     <?php endif; ?>
 
-    <section class="riwayat-hero">
+    <section class="riwayat-hero" data-aos="fade-down" data-aos-duration="700">
         <div class="riwayat-hero-content">
             <span class="riwayat-eyebrow">
                 <i class="ti ti-history"></i>
@@ -177,9 +177,9 @@ $summaryClass = $summaryCount <= 4 ? 'summary-count-' . $summaryCount : 'summary
         </div>
     </section>
 
-    <section class="riwayat-summary <?= app_e($summaryClass) ?>">
-        <?php foreach ($summaryCards as $card): ?>
-            <article class="riwayat-summary-card <?= app_e($card['class']) ?>">
+    <section class="riwayat-summary <?= app_e($summaryClass) ?>" data-aos="fade-up" data-aos-delay="140">
+        <?php foreach ($summaryCards as $idx => $card): ?>
+            <article class="riwayat-summary-card <?= app_e($card['class']) ?>" data-aos="zoom-in" data-aos-delay="<?= app_e((string) (80 + ((int) ($idx ?? 0)) * 100)) ?>">
                 <span class="riwayat-summary-icon">
                     <i class="<?= app_e($card['icon']) ?>"></i>
                 </span>
@@ -193,7 +193,7 @@ $summaryClass = $summaryCount <= 4 ? 'summary-count-' . $summaryCount : 'summary
         <?php endforeach; ?>
     </section>
 
-    <section class="riwayat-panel">
+    <section class="riwayat-panel" data-aos="fade-up" data-aos-delay="200">
         <div class="riwayat-panel-header">
             <div>
                 <span>Transaksi</span>
@@ -430,7 +430,7 @@ $summaryClass = $summaryCount <= 4 ? 'summary-count-' . $summaryCount : 'summary
     </section>
 </div>
 
-<script src="<?= app_e(app_asset('assets/js/riwayat.js')) ?>"></script>
+<script src="<?= app_e(app_asset_versioned('assets/js/riwayat.js')) ?>"></script>
 
 <?php require APP_PATH . '/views/layouts/footer.php'; ?>
 <?php require APP_PATH . '/views/layouts/scripts.php'; ?>

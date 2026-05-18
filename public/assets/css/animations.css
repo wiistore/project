@@ -1,0 +1,86 @@
+/* ==========================================================================
+   animations.css
+   Custom animation utility & override AOS untuk Kopsis POS
+   ========================================================================== */
+
+/* AOS body fix biar gak scroll-horizontal pas elemen masuk dari kiri/kanan */
+html, body {
+    overflow-x: hidden;
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Reduce motion (accessibility) */
+@media (prefers-reduced-motion: reduce) {
+    [data-aos] {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* AOS custom duration override (lebih halus dari default) */
+[data-aos][data-aos-duration="700"] { transition-duration: 700ms; }
+[data-aos][data-aos-duration="800"] { transition-duration: 800ms; }
+[data-aos][data-aos-duration="900"] { transition-duration: 900ms; }
+[data-aos][data-aos-duration="1000"] { transition-duration: 1000ms; }
+
+/* Counter element default style */
+[data-counter] {
+    display: inline-block;
+    font-variant-numeric: tabular-nums;
+    transition: color 0.3s ease;
+}
+
+/* Hover lift effect untuk card-card umum */
+.barang-summary-card,
+.kategori-summary-card,
+.supplier-summary-card,
+.user-summary-card,
+.restock-summary-card,
+.riwayat-summary-card,
+.laporan-summary-card,
+.dashboard-summary-card,
+.kasir-summary-card,
+.pos-summary-card {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.barang-summary-card:hover,
+.kategori-summary-card:hover,
+.supplier-summary-card:hover,
+.user-summary-card:hover,
+.restock-summary-card:hover,
+.riwayat-summary-card:hover,
+.laporan-summary-card:hover,
+.dashboard-summary-card:hover,
+.kasir-summary-card:hover,
+.pos-summary-card:hover {
+    transform: translateY(-3px);
+}
+
+/* Print: pastikan semua animasi off di print mode */
+@media print {
+    [data-aos] {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+
+    [data-counter] {
+        animation: none !important;
+    }
+}

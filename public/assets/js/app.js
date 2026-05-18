@@ -2,6 +2,7 @@
     'use strict';
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    void prefersReducedMotion;
 
     function initSidebar() {
         const sidebar = document.getElementById('appSidebar');
@@ -96,43 +97,6 @@
         });
     }
 
-    function initRevealAnimation() {
-        const elements = document.querySelectorAll('[data-animate]');
-
-        if (!elements.length) {
-            return;
-        }
-
-        elements.forEach((element) => {
-            const delay = Number.parseInt(element.getAttribute('data-delay') || '0', 10);
-            element.style.setProperty('--animate-delay', `${Number.isNaN(delay) ? 0 : delay}ms`);
-        });
-
-        if (prefersReducedMotion) {
-            elements.forEach((element) => element.classList.add('is-visible'));
-            return;
-        }
-
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (!entry.isIntersecting) {
-                        return;
-                    }
-
-                    entry.target.classList.add('is-visible');
-                    observer.unobserve(entry.target);
-                });
-            },
-            {
-                threshold: 0.12,
-                rootMargin: '0px 0px -24px 0px',
-            }
-        );
-
-        elements.forEach((element) => observer.observe(element));
-    }
-
     function initGlobalSearch() {
         const input = document.querySelector('[data-global-search]');
 
@@ -186,7 +150,6 @@
         initSidebar();
         initProfileDropdown();
         initActiveMenuFallback();
-        initRevealAnimation();
         initGlobalSearch();
         initThemeButton();
     });

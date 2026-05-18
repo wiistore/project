@@ -32,13 +32,14 @@ $oldUsername = is_array($old) ? ($old['username'] ?? '') : '';
     <title><?= auth_e($title) ?> - <?= auth_e($appName) ?></title>
 
     <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
     <link rel="stylesheet" href="<?= auth_e(auth_asset('assets/css/auth.css')) ?>">
 </head>
 <body>
-    <main class="auth-page">
+    <main class="auth-page" data-aos-delay="0">
         <canvas id="authParticles" class="auth-particles" aria-hidden="true"></canvas>
 
-        <section class="auth-left">
+        <section class="auth-left" data-aos="fade-right" data-aos-duration="800">
             <div class="auth-shape auth-shape-1"></div>
             <div class="auth-shape auth-shape-2"></div>
             <div class="auth-dots auth-dots-1"></div>
@@ -53,7 +54,7 @@ $oldUsername = is_array($old) ? ($old['username'] ?? '') : '';
             </div>
 
             <div class="auth-left-center">
-                <div class="auth-logo-wrap" data-auth-animate="zoom-in" data-delay="60">
+                <div class="auth-logo-wrap" data-aos="zoom-in" data-aos-delay="60">
                     <img
                         src="<?= auth_e(auth_asset('assets/images/mts.png')) ?>"
                         alt="Logo Laboratorium Kewirausahaan"
@@ -64,20 +65,20 @@ $oldUsername = is_array($old) ? ($old['username'] ?? '') : '';
                     </span>
                 </div>
 
-                <div class="auth-title-block" data-auth-animate="fade-down" data-delay="120">
+                <div class="auth-title-block" data-aos="fade-down" data-aos-delay="120">
                     <span>Sistem Kasir</span>
                     <h1>Koperasi Sekolah</h1>
                     <p>MTSN 8 Banyuwangi</p>
                     <div class="auth-title-line"></div>
                 </div>
 
-                <p class="auth-description" data-auth-animate="fade-up" data-delay="180">
+                <p class="auth-description" data-aos="fade-up" data-aos-delay="180">
                     Kelola Koperasi Sekolah dengan lebih mudah, cepat, dan terstruktur.
                 </p>
             </div>
 
             <div class="auth-benefits">
-                <div class="auth-benefit" data-auth-animate="fade-right" data-delay="220">
+                <div class="auth-benefit" data-aos="fade-right" data-aos-delay="220">
                     <i class="ti ti-shield-check"></i>
                     <div>
                         <strong>Aman</strong>
@@ -85,7 +86,7 @@ $oldUsername = is_array($old) ? ($old['username'] ?? '') : '';
                     </div>
                 </div>
 
-                <div class="auth-benefit" data-auth-animate="fade-up" data-delay="280">
+                <div class="auth-benefit" data-aos="fade-up" data-aos-delay="280">
                     <i class="ti ti-list-details"></i>
                     <div>
                         <strong>Terstruktur</strong>
@@ -93,7 +94,7 @@ $oldUsername = is_array($old) ? ($old['username'] ?? '') : '';
                     </div>
                 </div>
 
-                <div class="auth-benefit" data-auth-animate="fade-left" data-delay="340">
+                <div class="auth-benefit" data-aos="fade-left" data-aos-delay="340">
                     <i class="ti ti-bolt"></i>
                     <div>
                         <strong>Cepat</strong>
@@ -103,9 +104,9 @@ $oldUsername = is_array($old) ? ($old['username'] ?? '') : '';
             </div>
         </section>
 
-        <section class="auth-right">
-            <div class="auth-form-card" data-auth-animate="fade-left" data-delay="140">
-                <div class="auth-lock" data-auth-animate="zoom-in" data-delay="190">
+        <section class="auth-right" data-aos="fade-left" data-aos-duration="800">
+            <div class="auth-form-card" data-aos="fade-left" data-aos-delay="140">
+                <div class="auth-lock" data-aos="zoom-in" data-aos-delay="190">
                     <i class="ti ti-lock"></i>
                 </div>
 
@@ -187,5 +188,20 @@ $oldUsername = is_array($old) ? ($old['username'] ?? '') : '';
     </main>
 
     <script src="<?= auth_e(auth_asset('assets/js/auth-particles.js')) ?>"></script>
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    <script>
+        (function () {
+            if (typeof AOS === 'undefined') return;
+            var isMobile = window.matchMedia('(max-width: 768px)').matches;
+            AOS.init({
+                duration: 600,
+                easing: 'ease-out-cubic',
+                once: false,
+                mirror: false,
+                offset: 40,
+                disable: function () { return isMobile; }
+            });
+        })();
+    </script>
 </body>
 </html>

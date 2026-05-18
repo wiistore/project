@@ -2,7 +2,7 @@
 $title = $title ?? 'Restock Barang';
 $activeMenu = $activeMenu ?? 'restock';
 
-$pageCss = ['assets/css/restock.css?v=1' . time()];
+$pageCss = ['assets/css/restock.css'];
 
 $restocks = $restocks ?? [];
 $summary = $summary ?? [];
@@ -112,7 +112,7 @@ $summaryClass = $summaryCount <= 4 ? 'summary-count-' . $summaryCount : 'summary
         </div>
     <?php endif; ?>
 
-    <section class="restock-hero">
+    <section class="restock-hero" data-aos="fade-down" data-aos-duration="700">
         <div class="restock-hero-content">
             <span class="restock-eyebrow">
                 <i class="ti ti-stack-push"></i>
@@ -139,9 +139,9 @@ $summaryClass = $summaryCount <= 4 ? 'summary-count-' . $summaryCount : 'summary
         </div>
     </section>
 
-    <section class="restock-summary <?= app_e($summaryClass) ?>"  data-animate="fade-up" data-delay="140">
-        <?php foreach ($summaryCards as $card): ?>
-            <article class="restock-summary-card <?= app_e($card['class']) ?>">
+    <section class="restock-summary <?= app_e($summaryClass) ?>"  data-aos="fade-up" data-aos-delay="140">
+        <?php foreach ($summaryCards as $idx => $card): ?>
+            <article class="restock-summary-card <?= app_e($card['class']) ?>" data-aos="zoom-in" data-aos-delay="<?= app_e((string) (80 + ((int) ($idx ?? 0)) * 100)) ?>">
                 <span class="restock-summary-icon">
                     <i class="<?= app_e($card['icon']) ?>"></i>
                 </span>
@@ -155,7 +155,7 @@ $summaryClass = $summaryCount <= 4 ? 'summary-count-' . $summaryCount : 'summary
         <?php endforeach; ?>
     </section>
 
-    <section class="restock-panel">
+    <section class="restock-panel" data-aos="fade-up" data-aos-delay="200">
         <div class="restock-panel-header">
             <div>
                 <span>Inventori</span>
@@ -343,7 +343,7 @@ $summaryClass = $summaryCount <= 4 ? 'summary-count-' . $summaryCount : 'summary
     </section>
 </div>
 
-<script src="<?= app_e(app_asset('assets/js/restock.js')) ?>"></script>
+<script src="<?= app_e(app_asset_versioned('assets/js/restock.js')) ?>"></script>
 
 <?php require APP_PATH . '/views/layouts/footer.php'; ?>
 <?php require APP_PATH . '/views/layouts/scripts.php'; ?>
