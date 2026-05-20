@@ -244,9 +244,9 @@ if (!function_exists('supplier_field_error')) {
 
                 <h4>Catatan Supplier</h4>
 
-                <p>
+                <!-- <p>
                     Supplier dipakai oleh menu restock. Kalau supplier sudah pernah dipakai, sistem akan menonaktifkan, bukan menghapus. Ini bukan drama, ini menjaga histori data.
-                </p>
+                </p> -->
 
                 <ul>
                     <li>

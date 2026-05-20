@@ -136,9 +136,6 @@ require APP_PATH . '/views/layouts/navbar.php';
 
             <h2>Transaksi Penjualan</h2>
 
-            <p>
-                Cari barang, masukkan ke keranjang, pilih metode pembayaran, lalu simpan transaksi. Total tetap dihitung ulang backend, karena browser tidak layak dipercaya sepenuhnya.
-            </p>
         </div>
 
         <div class="pos-hero-actions">

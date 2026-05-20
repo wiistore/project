@@ -223,9 +223,7 @@ foreach (array_slice($barangTerlaris, 0, 6) as $row) {
 
             <h2>Laporan</h2>
 
-            <p>
-                Pantau penjualan, laba, metode pembayaran, barang terlaris, dan stok menipis. Data yang bagus itu bukan sulap, cuma query yang tidak dibuat sambil panik.
-            </p>
+
         </div>
 
         <div class="laporan-hero-actions">

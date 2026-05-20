@@ -78,7 +78,7 @@ if (!function_exists('barang_field_error')) {
             <?php if (!empty($errors)): ?>
                 <div class="barang-alert barang-alert-error">
                     <i class="ti ti-alert-triangle"></i>
-                    <span>Masih ada input yang perlu diberesin. Form bukan tempat buat tebak-tebakan.</span>
+                    <!-- <span>Masih ada input yang perlu diberesin. Form bukan tempat buat tebak-tebakan.</span> -->
                 </div>
             <?php endif; ?>
 
@@ -358,9 +358,9 @@ if (!function_exists('barang_field_error')) {
 
                 <h4>Catatan Stok</h4>
 
-                <p>
+                <!-- <p>
                     Stok barang sengaja tidak diedit di sini. Kalau stok diedit manual dari banyak tempat, nanti data restock dan transaksi jadi saling tuduh.
-                </p>
+                </p> -->
 
                 <ul>
                     <li>

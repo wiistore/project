@@ -125,9 +125,6 @@ $summaryCards = [
 
             <h2>Halo, <?= app_e($username) ?></h2>
 
-            <p>
-                Mulai transaksi, cek ringkasan penjualan hari ini, dan lihat transaksi terbaru kamu. Simpel, karena kasir butuh cepat, bukan diajak meditasi sama tabel.
-            </p>
         </div>
 
         <div class="kasir-hero-actions">

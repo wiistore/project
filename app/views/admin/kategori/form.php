@@ -128,9 +128,9 @@ if (!function_exists('kategori_field_error')) {
                             ><?= app_e($deskripsi) ?></textarea>
                         </div>
 
-                        <small class="kategori-field-hint">
+                        <!-- <small class="kategori-field-hint">
                             Opsional, tapi lebih bagus diisi. Nama doang kadang terlalu percaya diri.
-                        </small>
+                        </small> -->
 
                         <?php if (isset($errors['deskripsi'])): ?>
                             <small class="kategori-field-error"><?= app_e($errors['deskripsi']) ?></small>
@@ -160,9 +160,9 @@ if (!function_exists('kategori_field_error')) {
 
                 <h4>Catatan Kategori</h4>
 
-                <p>
+                <!-- <p>
                     Kategori dipakai oleh master barang. Kalau kategori masih dipakai barang, backend akan menolak penghapusan. Ini bagus, karena data relasi yang hancur itu bukan fitur.
-                </p>
+                </p> -->
 
                 <ul>
                     <li>

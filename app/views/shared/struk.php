@@ -128,9 +128,6 @@ $receiptText = implode("\n", $receiptLines);
 
             <h2>Struk Transaksi</h2>
 
-            <p>
-                Transaksi sudah tersimpan. Dari sini bisa cetak fisik, download PDF, atau salin teks struk buat non-fisik.
-            </p>
         </div>
 
         <div class="struk-hero-actions">

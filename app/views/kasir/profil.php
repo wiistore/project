@@ -87,9 +87,6 @@ if (!function_exists('profil_field_error')) {
 
             <h2>Profil Saya</h2>
 
-            <p>
-                Halaman ini hanya untuk melihat info akun dan mengganti password. Username dan email dikelola admin, biar akun kasir tidak berubah nama seenaknya seperti file final_revisi_fix_beneran.zip.
-            </p>
         </div>
 
         <div class="profil-hero-actions">
@@ -280,10 +277,6 @@ if (!function_exists('profil_field_error')) {
                 </span>
 
                 <h4>Keamanan Akun</h4>
-
-                <p>
-                    Username dan email hanya bisa diubah admin. Kasir cukup mengganti password sendiri supaya akses POS tetap aman.
-                </p>
 
                 <ul>
                     <li>

@@ -159,9 +159,6 @@ $summaryClass = $summaryCount <= 4 ? 'summary-count-' . $summaryCount : 'summary
 
             <h2>Riwayat Transaksi</h2>
 
-            <p>
-                Lihat transaksi yang sudah tersimpan, filter berdasarkan tanggal, cek struk, dan download PDF. Bukan buat menghapus dosa transaksi, cuma menampilkannya.
-            </p>
         </div>
 
         <div class="riwayat-hero-actions">

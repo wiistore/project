@@ -82,9 +82,6 @@ if (!function_exists('barang_stock_meta')) {
 
             <h2>Data Barang</h2>
 
-            <p>
-                Kelola barang koperasi dari satu tempat. Stok tidak diedit manual dari sini, karena stok masuk lewat restock dan keluar lewat transaksi.
-            </p>
         </div>
 
         <div class="barang-hero-actions">

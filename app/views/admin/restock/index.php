@@ -121,9 +121,6 @@ $summaryClass = $summaryCount <= 4 ? 'summary-count-' . $summaryCount : 'summary
 
             <h2>Restock Barang</h2>
 
-            <p>
-                Catat stok masuk dari supplier. Setiap restock akan menambah stok barang dan menyimpan harga beli untuk kebutuhan laporan laba.
-            </p>
         </div>
 
         <div class="restock-hero-actions">

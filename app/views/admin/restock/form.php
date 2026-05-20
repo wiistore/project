@@ -47,10 +47,6 @@ if (!function_exists('restock_option_price')) {
             </span>
 
             <h2><?= app_e($title) ?></h2>
-
-            <p>
-                Input restock akan langsung menambah stok barang. Isi harga beli dengan benar, karena angka modal yang ngawur nanti bikin laporan laba ikut halu.
-            </p>
         </div>
 
         <div class="restock-hero-actions">
@@ -78,7 +74,7 @@ if (!function_exists('restock_option_price')) {
             <?php if (!empty($errors)): ?>
                 <div class="restock-alert restock-alert-error">
                     <i class="ti ti-alert-triangle"></i>
-                    <span>Masih ada input yang perlu dibenerin. Restock itu angka, bukan firasat.</span>
+                    <!-- <span>Masih ada input yang perlu dibenerin. Restock itu angka, bukan firasat.</span> -->
                 </div>
             <?php endif; ?>
 
@@ -255,9 +251,9 @@ if (!function_exists('restock_option_price')) {
                             >
                         </div>
 
-                        <small class="restock-field-hint">
+                        <!-- <small class="restock-field-hint">
                             Opsional. Kalau diisi, harga jual barang akan ikut diperbarui.
-                        </small>
+                        </small> -->
 
                         <?php if (isset($errors['harga_jual_baru'])): ?>
                             <small class="restock-field-error"><?= app_e($errors['harga_jual_baru']) ?></small>
@@ -317,7 +313,7 @@ if (!function_exists('restock_option_price')) {
 
                 <h4>Info Barang</h4>
 
-                <p>Pilih barang dulu. Iya, komputer belum bisa nebak barang dari niat baik.</p>
+                <!-- <p>Pilih barang dulu. Iya, komputer belum bisa nebak barang dari niat baik.</p> -->
 
                 <ul>
                     <li>
@@ -342,7 +338,7 @@ if (!function_exists('restock_option_price')) {
 
                 <h4>Info Supplier</h4>
 
-                <p>Pilih supplier aktif yang menjadi sumber restock barang.</p>
+                <!-- <p>Pilih supplier aktif yang menjadi sumber restock barang.</p> -->
 
                 <ul>
                     <li>

@@ -113,9 +113,6 @@ if (!function_exists('supplier_short')) {
 
             <h2>Data Supplier</h2>
 
-            <p>
-                Kelola pemasok barang koperasi. Supplier yang sudah pernah dipakai restock tidak dihapus brutal, cukup dinonaktifkan supaya histori tetap waras.
-            </p>
         </div>
 
         <div class="supplier-hero-actions">

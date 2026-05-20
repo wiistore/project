@@ -92,10 +92,6 @@ if (!function_exists('kategori_short')) {
             </span>
 
             <h2>Data Kategori</h2>
-
-            <p>
-                Kelola kelompok barang supaya data produk lebih rapi, gampang dicari, dan nggak berubah jadi gudang digital tanpa label.
-            </p>
         </div>
 
         <div class="kategori-hero-actions">

@@ -67,7 +67,7 @@ $oldUsername = is_array($old) ? ($old['username'] ?? '') : '';
 
                 <div class="auth-title-block" data-aos="fade-down" data-aos-delay="120">
                     <span>Sistem Kasir</span>
-                    <h1>Koperasi Sekolah</h1>
+                    <h1>Laboratorium Kewirausahaan</h1>
                     <p>MTSN 8 Banyuwangi</p>
                     <div class="auth-title-line"></div>
                 </div>
@@ -77,7 +77,7 @@ $oldUsername = is_array($old) ? ($old['username'] ?? '') : '';
                 </p>
             </div>
 
-            <div class="auth-benefits">
+            <!-- <div class="auth-benefits">
                 <div class="auth-benefit" data-aos="fade-right" data-aos-delay="220">
                     <i class="ti ti-shield-check"></i>
                     <div>
@@ -101,7 +101,7 @@ $oldUsername = is_array($old) ? ($old['username'] ?? '') : '';
                         <span>Proses transaksi lebih efisien</span>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </section>
 
         <section class="auth-right" data-aos="fade-left" data-aos-duration="800">
@@ -170,14 +170,13 @@ $oldUsername = is_array($old) ? ($old['username'] ?? '') : '';
                         </div>
                     </div>
 
-                    <div class="auth-options">
+                    <!-- <div class="auth-options">
                         <label class="auth-check">
                             <input type="checkbox" name="remember" value="1">
                             <span>Remember me</span>
                         </label>
 
-                        <span class="auth-link">Forgot Password?</span>
-                    </div>
+                    </div> -->
 
                     <button type="submit" class="auth-submit">
                         Masuk ke Sistem

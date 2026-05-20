@@ -132,9 +132,6 @@ $summaryCards = [
 
             <h2>User Kasir</h2>
 
-            <p>
-                Kelola akun kasir untuk akses POS. Admin utama tetap dilindungi, karena membiarkan tombol hapus admin utama itu ide yang lahir dari kecerobohan.
-            </p>
         </div>
 
         <div class="user-hero-actions">
