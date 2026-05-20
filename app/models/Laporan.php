@@ -6,7 +6,7 @@ class Laporan extends Model
 {
     public function summary(?string $start = null, ?string $end = null): array
     {
-        // Ringkasan laporan
+        // Ringkasan laporan (exclude transaksi dibatalkan)
         $sql = "
             SELECT
                 COUNT(t.id) AS total_transaksi,
@@ -14,7 +14,7 @@ class Laporan extends Model
                 COALESCE(SUM(t.total_beli), 0) AS total_modal,
                 COALESCE(SUM(t.total_laba), 0) AS total_laba
             FROM transaksi t
-            WHERE 1 = 1
+            WHERE t.status != 'dibatalkan'
         ";
 
         $params = $this->dateParams($start, $end, $sql);
@@ -31,7 +31,7 @@ class Laporan extends Model
 
     public function penjualanHarian(?string $start = null, ?string $end = null): array
     {
-        // Penjualan per hari
+        // Penjualan per hari (exclude transaksi dibatalkan)
         $sql = "
             SELECT
                 DATE(t.tanggal) AS tanggal,
@@ -40,14 +40,14 @@ class Laporan extends Model
                 COALESCE(SUM(t.total_beli), 0) AS total_modal,
                 COALESCE(SUM(t.total_laba), 0) AS total_laba
             FROM transaksi t
-            WHERE 1 = 1
+            WHERE t.status != 'dibatalkan'
         ";
 
         $params = $this->dateParams($start, $end, $sql);
 
         $sql .= "
             GROUP BY DATE(t.tanggal)
-            ORDER BY tanggal DESC
+            ORDER BY tanggal ASC
             LIMIT 100
         ";
 
@@ -56,7 +56,7 @@ class Laporan extends Model
 
     public function penjualanByKasir(?string $start = null, ?string $end = null): array
     {
-        // Penjualan per kasir
+        // Penjualan per kasir (exclude transaksi dibatalkan)
         $sql = "
             SELECT
                 u.id AS id_user,
@@ -67,7 +67,7 @@ class Laporan extends Model
                 COALESCE(SUM(t.total_laba), 0) AS total_laba
             FROM transaksi t
             INNER JOIN users u ON u.id = t.id_user
-            WHERE 1 = 1
+            WHERE t.status != 'dibatalkan'
         ";
 
         $params = $this->dateParams($start, $end, $sql);
@@ -83,7 +83,7 @@ class Laporan extends Model
 
     public function barangTerlaris(?string $start = null, ?string $end = null, int $limit = 20): array
     {
-        // Barang paling banyak terjual
+        // Barang paling banyak terjual (exclude transaksi dibatalkan)
         $limit = max(1, min($limit, 100));
 
         $sql = "
@@ -102,7 +102,7 @@ class Laporan extends Model
             INNER JOIN transaksi t ON t.id = dt.id_transaksi
             INNER JOIN barang b ON b.id = dt.id_barang
             INNER JOIN kategori k ON k.id = b.id_kategori
-            WHERE 1 = 1
+            WHERE t.status != 'dibatalkan'
         ";
 
         $params = $this->dateParams($start, $end, $sql);
@@ -124,14 +124,14 @@ class Laporan extends Model
 
     public function metodePembayaran(?string $start = null, ?string $end = null): array
     {
-        // Ringkasan metode bayar
+        // Ringkasan metode bayar (exclude transaksi dibatalkan)
         $sql = "
             SELECT
                 t.metode_bayar,
                 COUNT(t.id) AS total_transaksi,
                 COALESCE(SUM(t.total_jual), 0) AS total_penjualan
             FROM transaksi t
-            WHERE 1 = 1
+            WHERE t.status != 'dibatalkan'
         ";
 
         $params = $this->dateParams($start, $end, $sql);

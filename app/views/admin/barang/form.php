@@ -84,32 +84,7 @@ if (!function_exists('barang_field_error')) {
 
             <form action="<?= app_e(app_url($formAction)) ?>" method="POST" class="barang-form" data-barang-form>
                 <div class="barang-form-grid">
-                    <div class="barang-field">
-                        <label for="kode_barang">
-                            Kode Barang
-                            <span>*</span>
-                        </label>
-
-                        <div class="barang-input-wrap">
-                            <i class="ti ti-hash"></i>
-                            <input
-                                type="text"
-                                id="kode_barang"
-                                name="kode_barang"
-                                value="<?= app_e($kodeBarang) ?>"
-                                placeholder="Contoh: BRG001"
-                                class="<?= app_e(barang_field_error($errors, 'kode_barang')) ?>"
-                                autocomplete="off"
-                                autofocus
-                            >
-                        </div>
-
-                        <?php if (isset($errors['kode_barang'])): ?>
-                            <small class="barang-field-error"><?= app_e($errors['kode_barang']) ?></small>
-                        <?php endif; ?>
-                    </div>
-
-                    <div class="barang-field">
+                    <div class="barang-field field-full">
                         <label for="barcode">
                             Barcode
                             <span>*</span>
@@ -125,6 +100,7 @@ if (!function_exists('barang_field_error')) {
                                 placeholder="Scan / ketik / klik Generate"
                                 class="<?= app_e(barang_field_error($errors, 'barcode')) ?>"
                                 autocomplete="off"
+                                autofocus
                                 data-barang-barcode-input
                             >
                             <button
@@ -156,6 +132,30 @@ if (!function_exists('barang_field_error')) {
 
                         <?php if (isset($errors['barcode'])): ?>
                             <small class="barang-field-error"><?= app_e($errors['barcode']) ?></small>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="barang-field field-full">
+                        <label for="kode_barang">
+                            Kode Barang
+                            <span>*</span>
+                        </label>
+
+                        <div class="barang-input-wrap">
+                            <i class="ti ti-hash"></i>
+                            <input
+                                type="text"
+                                id="kode_barang"
+                                name="kode_barang"
+                                value="<?= app_e($kodeBarang) ?>"
+                                placeholder="Contoh: BRG001"
+                                class="<?= app_e(barang_field_error($errors, 'kode_barang')) ?>"
+                                autocomplete="off"
+                            >
+                        </div>
+
+                        <?php if (isset($errors['kode_barang'])): ?>
+                            <small class="barang-field-error"><?= app_e($errors['kode_barang']) ?></small>
                         <?php endif; ?>
                     </div>
 

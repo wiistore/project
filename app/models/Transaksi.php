@@ -72,6 +72,9 @@ class Transaksi extends Model
                 t.metode_bayar,
                 t.nominal_bayar,
                 t.kembalian,
+                t.status,
+                t.alasan_batal,
+                t.edited_at,
                 t.created_at
             FROM {$this->table} t
             INNER JOIN users u ON u.id = t.id_user
@@ -112,6 +115,9 @@ class Transaksi extends Model
                 t.metode_bayar,
                 t.nominal_bayar,
                 t.kembalian,
+                t.status,
+                t.alasan_batal,
+                t.edited_at,
                 t.created_at
             FROM {$this->table} t
             INNER JOIN users u ON u.id = t.id_user
@@ -140,6 +146,9 @@ class Transaksi extends Model
                 t.metode_bayar,
                 t.nominal_bayar,
                 t.kembalian,
+                t.status,
+                t.alasan_batal,
+                t.edited_at,
                 t.created_at
             FROM {$this->table} t
             INNER JOIN users u ON u.id = t.id_user
@@ -286,6 +295,70 @@ class Transaksi extends Model
         return $this->fetch($sql, [
             'kode_transaksi' => $kode,
         ]) !== false;
+    }
+
+    public function updateStatus(int $id, string $status, ?string $alasanBatal = null): bool
+    {
+        // Update status transaksi
+        if (!in_array($status, ['selesai', 'diubah', 'dibatalkan'], true)) {
+            return false;
+        }
+
+        $sql = "
+            UPDATE {$this->table}
+            SET status = :status,
+                alasan_batal = :alasan_batal
+            WHERE id = :id
+            LIMIT 1
+        ";
+
+        return $this->execute($sql, [
+            'status' => $status,
+            'alasan_batal' => $alasanBatal,
+            'id' => $id,
+        ]);
+    }
+
+    public function markAsEdited(int $id): bool
+    {
+        // Tandai transaksi sebagai telah diubah
+        $sql = "
+            UPDATE {$this->table}
+            SET status = 'diubah',
+                edited_at = NOW()
+            WHERE id = :id
+            LIMIT 1
+        ";
+
+        return $this->execute($sql, [
+            'id' => $id,
+        ]);
+    }
+
+    public function updateTotals(int $id, array $totals): bool
+    {
+        // Update total transaksi setelah edit
+        $sql = "
+            UPDATE {$this->table}
+            SET total_jual = :total_jual,
+                total_beli = :total_beli,
+                total_laba = :total_laba,
+                nominal_bayar = :nominal_bayar,
+                kembalian = :kembalian,
+                status = 'diubah',
+                edited_at = NOW()
+            WHERE id = :id
+            LIMIT 1
+        ";
+
+        return $this->execute($sql, [
+            'total_jual' => (float) $totals['total_jual'],
+            'total_beli' => (float) $totals['total_beli'],
+            'total_laba' => (float) $totals['total_laba'],
+            'nominal_bayar' => (float) $totals['nominal_bayar'],
+            'kembalian' => (float) $totals['kembalian'],
+            'id' => $id,
+        ]);
     }
 
     public function isValidPaymentMethod(string $method): bool

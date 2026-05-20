@@ -1,5 +1,5 @@
 <?php
-$title = $title ?? 'Restock Barang';
+$title = $title ?? 'Restock & Penyesuaian Stok';
 $activeMenu = $activeMenu ?? 'restock';
 
 $pageCss = ['assets/css/restock.css'];
@@ -10,6 +10,7 @@ $flash = $flash ?? [];
 
 $tanggalMulai = $tanggalMulai ?? ($_GET['tanggal_mulai'] ?? '');
 $tanggalSelesai = $tanggalSelesai ?? ($_GET['tanggal_selesai'] ?? '');
+$filterTipe = $filterTipe ?? ($_GET['tipe'] ?? '');
 
 $success = $flash['success'] ?? null;
 $error = $flash['error'] ?? null;
@@ -62,30 +63,38 @@ if (!function_exists('restock_short')) {
 }
 
 $totalRestock = (int) ($summary['total_restock'] ?? count($restocks));
-$totalQty = (int) ($summary['total_qty'] ?? 0);
+$totalQtyMasuk = (int) ($summary['total_qty_masuk'] ?? 0);
+$totalQtyKeluar = (int) ($summary['total_qty_keluar'] ?? 0);
 $totalNilai = (float) ($summary['total_nilai'] ?? 0);
 
 $summaryCards = [
     [
         'class' => 'summary-green',
         'icon' => 'ti ti-stack-push',
-        'label' => 'Total Restock',
+        'label' => 'Total Record',
         'value' => (string) $totalRestock,
-        'desc' => 'Transaksi stok masuk',
+        'desc' => 'Semua penyesuaian stok',
     ],
     [
         'class' => 'summary-blue',
         'icon' => 'ti ti-package-import',
-        'label' => 'Qty Masuk',
-        'value' => (string) $totalQty,
+        'label' => 'Stok Masuk',
+        'value' => (string) $totalQtyMasuk,
         'desc' => 'Total barang masuk',
+    ],
+    [
+        'class' => 'summary-red',
+        'icon' => 'ti ti-package-export',
+        'label' => 'Stok Keluar',
+        'value' => (string) $totalQtyKeluar,
+        'desc' => 'Total barang keluar',
     ],
     [
         'class' => 'summary-orange',
         'icon' => 'ti ti-cash',
-        'label' => 'Nilai Restock',
+        'label' => 'Nilai Total',
         'value' => restock_rupiah($totalNilai),
-        'desc' => 'Modal pembelian barang',
+        'desc' => 'Nilai semua penyesuaian',
     ],
 ];
 
@@ -116,27 +125,26 @@ $summaryClass = $summaryCount <= 4 ? 'summary-count-' . $summaryCount : 'summary
         <div class="restock-hero-content">
             <span class="restock-eyebrow">
                 <i class="ti ti-stack-push"></i>
-                Stok Masuk
+                Penyesuaian Stok
             </span>
 
-            <h2>Restock Barang</h2>
-
+            <h2>Restock & Penyesuaian Stok</h2>
         </div>
 
         <div class="restock-hero-actions">
-            <a href="<?= app_e(app_url('/admin/restock/create')) ?>" class="restock-btn restock-btn-primary">
+            <a href="<?= app_e(app_url('/admin/restock/create?tipe=masuk')) ?>" class="restock-btn restock-btn-primary">
                 <i class="ti ti-plus"></i>
-                Tambah Restock
+                Tambah Stok
             </a>
 
-            <a href="<?= app_e(app_url('/admin/barang')) ?>" class="restock-btn restock-btn-soft">
-                <i class="ti ti-package"></i>
-                Lihat Barang
+            <a href="<?= app_e(app_url('/admin/restock/create?tipe=keluar')) ?>" class="restock-btn restock-btn-danger">
+                <i class="ti ti-minus"></i>
+                Kurangi Stok
             </a>
         </div>
     </section>
 
-    <section class="restock-summary <?= app_e($summaryClass) ?>"  data-aos="fade-up" data-aos-delay="140">
+    <section class="restock-summary <?= app_e($summaryClass) ?>" data-aos="fade-up" data-aos-delay="140">
         <?php foreach ($summaryCards as $idx => $card): ?>
             <article class="restock-summary-card <?= app_e($card['class']) ?>" data-aos="zoom-in" data-aos-delay="<?= app_e((string) (80 + ((int) ($idx ?? 0)) * 100)) ?>">
                 <span class="restock-summary-icon">
@@ -156,7 +164,7 @@ $summaryClass = $summaryCount <= 4 ? 'summary-count-' . $summaryCount : 'summary
         <div class="restock-panel-header">
             <div>
                 <span>Inventori</span>
-                <h3>Riwayat Restock</h3>
+                <h3>Riwayat Penyesuaian Stok</h3>
             </div>
 
             <div class="restock-tools">
@@ -169,6 +177,15 @@ $summaryClass = $summaryCount <= 4 ? 'summary-count-' . $summaryCount : 'summary
                     <label>
                         <span>Tanggal Selesai</span>
                         <input type="date" name="tanggal_selesai" value="<?= app_e($tanggalSelesai) ?>">
+                    </label>
+
+                    <label>
+                        <span>Tipe</span>
+                        <select name="tipe" class="restock-filter-select">
+                            <option value="">Semua</option>
+                            <option value="masuk" <?= $filterTipe === 'masuk' ? 'selected' : '' ?>>Stok Masuk</option>
+                            <option value="keluar" <?= $filterTipe === 'keluar' ? 'selected' : '' ?>>Stok Keluar</option>
+                        </select>
                     </label>
 
                     <button type="submit" class="restock-btn restock-btn-ghost">
@@ -199,15 +216,15 @@ $summaryClass = $summaryCount <= 4 ? 'summary-count-' . $summaryCount : 'summary
                     <i class="ti ti-stack-pop"></i>
                 </span>
 
-                <h4>Belum ada data restock</h4>
+                <h4>Belum ada data</h4>
 
                 <p>
-                    Tambahkan restock pertama. Stok barang tidak akan bertambah dari doa, walau manusia sering mencoba.
+                    Belum ada riwayat penyesuaian stok. Tambahkan stok masuk atau catat stok keluar.
                 </p>
 
-                <a href="<?= app_e(app_url('/admin/restock/create')) ?>" class="restock-btn restock-btn-primary">
+                <a href="<?= app_e(app_url('/admin/restock/create?tipe=masuk')) ?>" class="restock-btn restock-btn-primary">
                     <i class="ti ti-plus"></i>
-                    Tambah Restock
+                    Tambah Stok
                 </a>
             </div>
         <?php else: ?>
@@ -216,36 +233,51 @@ $summaryClass = $summaryCount <= 4 ? 'summary-count-' . $summaryCount : 'summary
                     <thead>
                         <tr>
                             <th>No</th>
+                            <th>Tipe</th>
                             <th>Tanggal</th>
                             <th>Barang</th>
                             <th>Supplier</th>
                             <th>Qty</th>
                             <th>Harga Beli</th>
-                            <th>Harga Jual Baru</th>
                             <th>Total Nilai</th>
                             <th>Dibuat Oleh</th>
-                            <th>Catatan</th>
+                            <th>Keterangan</th>
                         </tr>
                     </thead>
 
                     <tbody data-restock-table-body>
                         <?php foreach ($restocks as $index => $restock): ?>
                             <?php
+                            $tipeRow = $restock['tipe'] ?? 'masuk';
+                            $isMasukRow = $tipeRow === 'masuk';
                             $hargaJualBaru = $restock['harga_jual_baru'] ?? null;
                             $hasHargaJualBaru = $hargaJualBaru !== null && $hargaJualBaru !== '';
+                            $alasanRow = $restock['alasan'] ?? '';
+                            $catatanRow = $restock['catatan'] ?? '';
+                            $keterangan = $isMasukRow ? $catatanRow : ($alasanRow !== '' ? $alasanRow : $catatanRow);
+
                             $searchText = implode(' ', [
                                 $restock['tanggal'] ?? '',
+                                $tipeRow,
                                 $restock['kode_barang'] ?? '',
                                 $restock['nama_barang'] ?? '',
                                 $restock['nama_supplier'] ?? '',
                                 $restock['dibuat_oleh'] ?? '',
-                                $restock['catatan'] ?? '',
+                                $catatanRow,
+                                $alasanRow,
                             ]);
                             ?>
 
-                            <tr data-restock-row data-search="<?= app_e(strtolower($searchText)) ?>">
+                            <tr data-restock-row data-search="<?= app_e(strtolower($searchText)) ?>" data-tipe="<?= app_e($tipeRow) ?>">
                                 <td>
                                     <span class="restock-number"><?= app_e((string) ($index + 1)) ?></span>
+                                </td>
+
+                                <td>
+                                    <span class="restock-tipe-badge <?= $isMasukRow ? 'tipe-masuk' : 'tipe-keluar' ?>">
+                                        <i class="ti ti-<?= $isMasukRow ? 'arrow-up' : 'arrow-down' ?>"></i>
+                                        <?= $isMasukRow ? 'Masuk' : 'Keluar' ?>
+                                    </span>
                                 </td>
 
                                 <td>
@@ -281,8 +313,8 @@ $summaryClass = $summaryCount <= 4 ? 'summary-count-' . $summaryCount : 'summary
                                 </td>
 
                                 <td>
-                                    <span class="restock-qty">
-                                        <i class="ti ti-plus"></i>
+                                    <span class="restock-qty <?= $isMasukRow ? 'qty-masuk' : 'qty-keluar' ?>">
+                                        <i class="ti ti-<?= $isMasukRow ? 'plus' : 'minus' ?>"></i>
                                         <?= app_e((string) ((int) ($restock['qty'] ?? 0))) ?>
                                     </span>
                                 </td>
@@ -291,16 +323,6 @@ $summaryClass = $summaryCount <= 4 ? 'summary-count-' . $summaryCount : 'summary
                                     <strong class="restock-money">
                                         <?= app_e(restock_rupiah($restock['harga_beli'] ?? 0)) ?>
                                     </strong>
-                                </td>
-
-                                <td>
-                                    <?php if ($hasHargaJualBaru): ?>
-                                        <strong class="restock-money is-new-price">
-                                            <?= app_e(restock_rupiah($hargaJualBaru)) ?>
-                                        </strong>
-                                    <?php else: ?>
-                                        <span class="restock-muted">Tidak berubah</span>
-                                    <?php endif; ?>
                                 </td>
 
                                 <td>
@@ -318,7 +340,7 @@ $summaryClass = $summaryCount <= 4 ? 'summary-count-' . $summaryCount : 'summary
 
                                 <td>
                                     <span class="restock-note">
-                                        <?= app_e(restock_short($restock['catatan'] ?? '', 60)) ?>
+                                        <?= app_e(restock_short($keterangan, 60)) ?>
                                     </span>
                                 </td>
                             </tr>
