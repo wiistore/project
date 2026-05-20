@@ -8,19 +8,20 @@ class Restock extends Model
 
     public function getAll(int $limit = 100): array
     {
-        // Ambil data restock
+        // Ambil data restock (LEFT JOIN supplier karena bisa null untuk tipe keluar)
         $limit = max(1, min($limit, 200));
 
         $sql = "
             SELECT
                 r.id,
                 r.tanggal,
+                r.tipe,
                 r.id_barang,
                 b.kode_barang,
                 b.nama AS nama_barang,
                 b.satuan,
                 r.id_supplier,
-                s.nama AS nama_supplier,
+                COALESCE(s.nama, '-') AS nama_supplier,
                 r.id_user,
                 u.username AS dibuat_oleh,
                 r.qty,
@@ -28,10 +29,11 @@ class Restock extends Model
                 r.harga_jual_baru,
                 r.total_nilai,
                 r.catatan,
+                r.alasan,
                 r.created_at
             FROM {$this->table} r
             INNER JOIN barang b ON b.id = r.id_barang
-            INNER JOIN supplier s ON s.id = r.id_supplier
+            LEFT JOIN supplier s ON s.id = r.id_supplier
             INNER JOIN users u ON u.id = r.id_user
             ORDER BY r.tanggal DESC, r.id DESC
             LIMIT {$limit}
@@ -47,12 +49,13 @@ class Restock extends Model
             SELECT
                 r.id,
                 r.tanggal,
+                r.tipe,
                 r.id_barang,
                 b.kode_barang,
                 b.nama AS nama_barang,
                 b.satuan,
                 r.id_supplier,
-                s.nama AS nama_supplier,
+                COALESCE(s.nama, '-') AS nama_supplier,
                 r.id_user,
                 u.username AS dibuat_oleh,
                 r.qty,
@@ -60,10 +63,11 @@ class Restock extends Model
                 r.harga_jual_baru,
                 r.total_nilai,
                 r.catatan,
+                r.alasan,
                 r.created_at
             FROM {$this->table} r
             INNER JOIN barang b ON b.id = r.id_barang
-            INNER JOIN supplier s ON s.id = r.id_supplier
+            LEFT JOIN supplier s ON s.id = r.id_supplier
             INNER JOIN users u ON u.id = r.id_user
             WHERE r.id = :id
             LIMIT 1
@@ -85,6 +89,7 @@ class Restock extends Model
         $sql = "
             INSERT INTO {$this->table}
                 (
+                    tipe,
                     tanggal,
                     id_barang,
                     id_supplier,
@@ -93,10 +98,12 @@ class Restock extends Model
                     harga_beli,
                     harga_jual_baru,
                     total_nilai,
-                    catatan
+                    catatan,
+                    alasan
                 )
             VALUES
                 (
+                    :tipe,
                     :tanggal,
                     :id_barang,
                     :id_supplier,
@@ -105,7 +112,8 @@ class Restock extends Model
                     :harga_beli,
                     :harga_jual_baru,
                     :total_nilai,
-                    :catatan
+                    :catatan,
+                    :alasan
                 )
         ";
 
@@ -114,15 +122,17 @@ class Restock extends Model
         $totalNilai = $qty * $hargaBeli;
 
         $this->execute($sql, [
+            'tipe' => $data['tipe'] ?? 'masuk',
             'tanggal' => $data['tanggal'] ?? date('Y-m-d'),
             'id_barang' => (int) $data['id_barang'],
-            'id_supplier' => (int) $data['id_supplier'],
+            'id_supplier' => $data['id_supplier'] !== null && $data['id_supplier'] !== '' ? (int) $data['id_supplier'] : null,
             'id_user' => (int) $data['id_user'],
             'qty' => $qty,
             'harga_beli' => $hargaBeli,
             'harga_jual_baru' => $this->nullableNumber($data['harga_jual_baru'] ?? null),
             'total_nilai' => $totalNilai,
             'catatan' => $this->nullableText($data['catatan'] ?? ''),
+            'alasan' => $this->nullableText($data['alasan'] ?? ''),
         ]);
 
         return $this->lastInsertId();
@@ -133,21 +143,22 @@ class Restock extends Model
         return $this->create($data);
     }
 
-    public function getByDateRange(?string $start = null, ?string $end = null, int $limit = 200): array
+    public function getFiltered(?string $start = null, ?string $end = null, ?string $tipe = null, int $limit = 200): array
     {
-        // Filter tanggal
+        // Filter tanggal + tipe
         $limit = max(1, min($limit, 500));
 
         $sql = "
             SELECT
                 r.id,
                 r.tanggal,
+                r.tipe,
                 r.id_barang,
                 b.kode_barang,
                 b.nama AS nama_barang,
                 b.satuan,
                 r.id_supplier,
-                s.nama AS nama_supplier,
+                COALESCE(s.nama, '-') AS nama_supplier,
                 r.id_user,
                 u.username AS dibuat_oleh,
                 r.qty,
@@ -155,10 +166,11 @@ class Restock extends Model
                 r.harga_jual_baru,
                 r.total_nilai,
                 r.catatan,
+                r.alasan,
                 r.created_at
             FROM {$this->table} r
             INNER JOIN barang b ON b.id = r.id_barang
-            INNER JOIN supplier s ON s.id = r.id_supplier
+            LEFT JOIN supplier s ON s.id = r.id_supplier
             INNER JOIN users u ON u.id = r.id_user
             WHERE 1 = 1
         ";
@@ -175,12 +187,22 @@ class Restock extends Model
             $params['tanggal_selesai'] = $end;
         }
 
+        if ($tipe !== null && $tipe !== '' && in_array($tipe, ['masuk', 'keluar'], true)) {
+            $sql .= " AND r.tipe = :tipe";
+            $params['tipe'] = $tipe;
+        }
+
         $sql .= "
             ORDER BY r.tanggal DESC, r.id DESC
             LIMIT {$limit}
         ";
 
         return $this->fetchAll($sql, $params);
+    }
+
+    public function getByDateRange(?string $start = null, ?string $end = null, int $limit = 200): array
+    {
+        return $this->getFiltered($start, $end, null, $limit);
     }
 
     public function getBySupplierId(int $supplierId, int $limit = 100): array
@@ -192,6 +214,7 @@ class Restock extends Model
             SELECT
                 r.id,
                 r.tanggal,
+                r.tipe,
                 b.nama AS nama_barang,
                 r.qty,
                 r.harga_beli,
@@ -218,14 +241,16 @@ class Restock extends Model
             SELECT
                 r.id,
                 r.tanggal,
-                s.nama AS nama_supplier,
+                r.tipe,
+                COALESCE(s.nama, '-') AS nama_supplier,
                 r.qty,
                 r.harga_beli,
                 r.harga_jual_baru,
                 r.total_nilai,
+                r.alasan,
                 r.created_at
             FROM {$this->table} r
-            INNER JOIN supplier s ON s.id = r.id_supplier
+            LEFT JOIN supplier s ON s.id = r.id_supplier
             WHERE r.id_barang = :id_barang
             ORDER BY r.tanggal DESC, r.id DESC
             LIMIT {$limit}
@@ -238,11 +263,12 @@ class Restock extends Model
 
     public function getLastHargaBeli(int $barangId): float
     {
-        // Harga beli terakhir buat transaksi nanti
+        // Harga beli terakhir buat transaksi nanti (hanya dari tipe masuk)
         $sql = "
             SELECT harga_beli
             FROM {$this->table}
             WHERE id_barang = :id_barang
+              AND tipe = 'masuk'
             ORDER BY tanggal DESC, id DESC
             LIMIT 1
         ";
@@ -254,12 +280,14 @@ class Restock extends Model
         return $harga === false ? 0.0 : (float) $harga;
     }
 
-    public function summary(?string $start = null, ?string $end = null): array
+    public function summary(?string $start = null, ?string $end = null, ?string $tipe = null): array
     {
         // Ringkasan restock
         $sql = "
             SELECT
                 COUNT(r.id) AS total_restock,
+                COALESCE(SUM(CASE WHEN r.tipe = 'masuk' THEN r.qty ELSE 0 END), 0) AS total_qty_masuk,
+                COALESCE(SUM(CASE WHEN r.tipe = 'keluar' THEN r.qty ELSE 0 END), 0) AS total_qty_keluar,
                 COALESCE(SUM(r.qty), 0) AS total_qty,
                 COALESCE(SUM(r.total_nilai), 0) AS total_nilai
             FROM {$this->table} r
@@ -278,10 +306,17 @@ class Restock extends Model
             $params['tanggal_selesai'] = $end;
         }
 
+        if ($tipe !== null && $tipe !== '' && in_array($tipe, ['masuk', 'keluar'], true)) {
+            $sql .= " AND r.tipe = :tipe";
+            $params['tipe'] = $tipe;
+        }
+
         $row = $this->fetch($sql, $params);
 
         return [
             'total_restock' => (int) ($row['total_restock'] ?? 0),
+            'total_qty_masuk' => (int) ($row['total_qty_masuk'] ?? 0),
+            'total_qty_keluar' => (int) ($row['total_qty_keluar'] ?? 0),
             'total_qty' => (int) ($row['total_qty'] ?? 0),
             'total_nilai' => (float) ($row['total_nilai'] ?? 0),
         ];

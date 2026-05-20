@@ -195,6 +195,19 @@ class DetailTransaksi extends Model
         ];
     }
 
+    public function deleteByTransaksiId(int $transaksiId): bool
+    {
+        // Hapus semua detail transaksi (untuk edit/replace)
+        $sql = "
+            DELETE FROM {$this->table}
+            WHERE id_transaksi = :id_transaksi
+        ";
+
+        return $this->execute($sql, [
+            'id_transaksi' => $transaksiId,
+        ]);
+    }
+
     public function countAll(): int
     {
         $sql = "

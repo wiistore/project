@@ -5,6 +5,7 @@ $activeMenu = $activeMenu ?? 'restock';
 $pageCss = ['assets/css/restock.css'];
 
 $formAction = $formAction ?? '/admin/restock/store';
+$tipe = $tipe ?? 'masuk';
 
 $barangs = $barangs ?? [];
 $suppliers = $suppliers ?? [];
@@ -18,6 +19,10 @@ $qty = $old['qty'] ?? '';
 $hargaBeli = $old['harga_beli'] ?? '';
 $hargaJualBaru = $old['harga_jual_baru'] ?? '';
 $catatan = $old['catatan'] ?? '';
+$alasan = $old['alasan'] ?? '';
+
+$isMasuk = $tipe === 'masuk';
+$isKeluar = $tipe === 'keluar';
 
 if (!function_exists('restock_field_error')) {
     function restock_field_error(array $errors, string $field): string
@@ -42,8 +47,8 @@ if (!function_exists('restock_option_price')) {
     <section class="restock-hero restock-form-hero" data-aos="fade-down" data-aos-duration="700">
         <div class="restock-hero-content">
             <span class="restock-eyebrow">
-                <i class="ti ti-stack-push"></i>
-                Tambah Stok Masuk
+                <i class="ti ti-<?= $isMasuk ? 'stack-push' : 'stack-pop' ?>"></i>
+                <?= $isMasuk ? 'Tambah Stok Masuk' : 'Kurangi Stok' ?>
             </span>
 
             <h2><?= app_e($title) ?></h2>
@@ -61,28 +66,29 @@ if (!function_exists('restock_option_price')) {
         <article class="restock-form-card">
             <div class="restock-form-head">
                 <div>
-                    <span>Form Restock</span>
-                    <h3>Tambah Restock Barang</h3>
+                    <span>Form <?= $isMasuk ? 'Restock' : 'Pengurangan Stok' ?></span>
+                    <h3><?= $isMasuk ? 'Tambah Restock Barang' : 'Kurangi Stok Barang' ?></h3>
                 </div>
 
-                <span class="restock-form-badge">
-                    <i class="ti ti-plus"></i>
-                    Stok Masuk
+                <span class="restock-form-badge <?= $isKeluar ? 'badge-danger' : '' ?>">
+                    <i class="ti ti-<?= $isMasuk ? 'plus' : 'minus' ?>"></i>
+                    <?= $isMasuk ? 'Stok Masuk' : 'Stok Keluar' ?>
                 </span>
             </div>
 
             <?php if (!empty($errors)): ?>
                 <div class="restock-alert restock-alert-error">
                     <i class="ti ti-alert-triangle"></i>
-                    <!-- <span>Masih ada input yang perlu dibenerin. Restock itu angka, bukan firasat.</span> -->
                 </div>
             <?php endif; ?>
 
             <form action="<?= app_e(app_url($formAction)) ?>" method="POST" class="restock-form" data-restock-form>
+                <input type="hidden" name="tipe" value="<?= app_e($tipe) ?>">
+
                 <div class="restock-form-grid">
                     <div class="restock-field">
                         <label for="tanggal">
-                            Tanggal Restock
+                            Tanggal
                             <span>*</span>
                         </label>
 
@@ -105,7 +111,7 @@ if (!function_exists('restock_option_price')) {
                     <div class="restock-field">
                         <label for="id_supplier">
                             Supplier
-                            <span>*</span>
+                            <?php if ($isMasuk): ?><span>*</span><?php endif; ?>
                         </label>
 
                         <div class="restock-input-wrap">
@@ -115,8 +121,9 @@ if (!function_exists('restock_option_price')) {
                                 name="id_supplier"
                                 class="<?= app_e(restock_field_error($errors, 'id_supplier')) ?>"
                                 data-supplier-select
+                                <?= $isKeluar ? '' : '' ?>
                             >
-                                <option value="">Pilih supplier</option>
+                                <option value=""><?= $isKeluar ? 'Opsional (pilih jika perlu)' : 'Pilih supplier' ?></option>
 
                                 <?php foreach ($suppliers as $supplier): ?>
                                     <option
@@ -177,12 +184,12 @@ if (!function_exists('restock_option_price')) {
 
                     <div class="restock-field">
                         <label for="qty">
-                            Qty Masuk
+                            <?= $isMasuk ? 'Qty Masuk' : 'Qty Keluar' ?>
                             <span>*</span>
                         </label>
 
                         <div class="restock-input-wrap">
-                            <i class="ti ti-plus"></i>
+                            <i class="ti ti-<?= $isMasuk ? 'plus' : 'minus' ?>"></i>
                             <input
                                 type="number"
                                 id="qty"
@@ -190,7 +197,7 @@ if (!function_exists('restock_option_price')) {
                                 value="<?= app_e($qty) ?>"
                                 min="1"
                                 step="1"
-                                placeholder="Contoh: 20"
+                                placeholder="<?= $isMasuk ? 'Contoh: 20' : 'Contoh: 5' ?>"
                                 class="<?= app_e(restock_field_error($errors, 'qty')) ?>"
                                 data-qty-input
                             >
@@ -231,34 +238,70 @@ if (!function_exists('restock_option_price')) {
                         <?php endif; ?>
                     </div>
 
-                    <div class="restock-field">
-                        <label for="harga_jual_baru">
-                            Harga Jual Baru
-                        </label>
+                    <?php if ($isMasuk): ?>
+                        <div class="restock-field">
+                            <label for="harga_jual_baru">
+                                Harga Jual Baru
+                            </label>
 
-                        <div class="restock-input-wrap">
-                            <i class="ti ti-tag"></i>
-                            <input
-                                type="number"
-                                id="harga_jual_baru"
-                                name="harga_jual_baru"
-                                value="<?= app_e($hargaJualBaru) ?>"
-                                min="1"
-                                step="1"
-                                placeholder="Kosongkan kalau tidak berubah"
-                                class="<?= app_e(restock_field_error($errors, 'harga_jual_baru')) ?>"
-                                data-new-price-input
-                            >
+                            <div class="restock-input-wrap">
+                                <i class="ti ti-tag"></i>
+                                <input
+                                    type="number"
+                                    id="harga_jual_baru"
+                                    name="harga_jual_baru"
+                                    value="<?= app_e($hargaJualBaru) ?>"
+                                    min="1"
+                                    step="1"
+                                    placeholder="Kosongkan kalau tidak berubah"
+                                    class="<?= app_e(restock_field_error($errors, 'harga_jual_baru')) ?>"
+                                    data-new-price-input
+                                >
+                            </div>
+
+                            <?php if (isset($errors['harga_jual_baru'])): ?>
+                                <small class="restock-field-error"><?= app_e($errors['harga_jual_baru']) ?></small>
+                            <?php endif; ?>
                         </div>
+                    <?php endif; ?>
 
-                        <!-- <small class="restock-field-hint">
-                            Opsional. Kalau diisi, harga jual barang akan ikut diperbarui.
-                        </small> -->
+                    <?php if ($isKeluar): ?>
+                        <div class="restock-field field-full">
+                            <label for="alasan">
+                                Alasan Pengurangan
+                                <span>*</span>
+                            </label>
 
-                        <?php if (isset($errors['harga_jual_baru'])): ?>
-                            <small class="restock-field-error"><?= app_e($errors['harga_jual_baru']) ?></small>
-                        <?php endif; ?>
-                    </div>
+                            <div class="restock-input-wrap">
+                                <i class="ti ti-alert-circle"></i>
+                                <select id="alasan_preset" data-alasan-preset>
+                                    <option value="">Pilih alasan atau tulis sendiri</option>
+                                    <option value="Barang rusak" <?= $alasan === 'Barang rusak' ? 'selected' : '' ?>>Barang rusak</option>
+                                    <option value="Barang expired" <?= $alasan === 'Barang expired' ? 'selected' : '' ?>>Barang expired</option>
+                                    <option value="Barang hilang" <?= $alasan === 'Barang hilang' ? 'selected' : '' ?>>Barang hilang</option>
+                                    <option value="Koreksi stok" <?= $alasan === 'Koreksi stok' ? 'selected' : '' ?>>Koreksi stok</option>
+                                    <option value="Salah input" <?= $alasan === 'Salah input' ? 'selected' : '' ?>>Salah input</option>
+                                    <option value="custom">Tulis sendiri...</option>
+                                </select>
+                            </div>
+
+                            <div class="restock-textarea-wrap" style="margin-top: 8px;">
+                                <i class="ti ti-notes"></i>
+                                <textarea
+                                    id="alasan"
+                                    name="alasan"
+                                    rows="3"
+                                    placeholder="Tulis alasan pengurangan stok"
+                                    class="<?= app_e(restock_field_error($errors, 'alasan')) ?>"
+                                    data-alasan-input
+                                ><?= app_e($alasan) ?></textarea>
+                            </div>
+
+                            <?php if (isset($errors['alasan'])): ?>
+                                <small class="restock-field-error"><?= app_e($errors['alasan']) ?></small>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
 
                     <div class="restock-field field-full">
                         <label for="catatan">Catatan</label>
@@ -269,7 +312,7 @@ if (!function_exists('restock_option_price')) {
                                 id="catatan"
                                 name="catatan"
                                 rows="5"
-                                placeholder="Catatan tambahan, nomor nota, atau info pembelian"
+                                placeholder="<?= $isMasuk ? 'Catatan tambahan, nomor nota, atau info pembelian' : 'Catatan tambahan (opsional)' ?>"
                                 class="<?= app_e(restock_field_error($errors, 'catatan')) ?>"
                             ><?= app_e($catatan) ?></textarea>
                         </div>
@@ -280,21 +323,21 @@ if (!function_exists('restock_option_price')) {
                     </div>
                 </div>
 
-                <div class="restock-total-box">
+                <div class="restock-total-box <?= $isKeluar ? 'is-keluar' : '' ?>">
                     <div>
-                        <span>Total Nilai Restock</span>
+                        <span><?= $isMasuk ? 'Total Nilai Restock' : 'Total Nilai Stok Keluar' ?></span>
                         <strong data-restock-total>Rp 0</strong>
                     </div>
 
                     <small>
-                        Total = qty masuk × harga beli per item.
+                        Total = qty × harga beli per item.
                     </small>
                 </div>
 
                 <div class="restock-form-actions">
-                    <button type="submit" class="restock-btn restock-btn-primary restock-submit-btn">
+                    <button type="submit" class="restock-btn restock-btn-primary restock-submit-btn <?= $isKeluar ? 'btn-danger' : '' ?>">
                         <i class="ti ti-device-floppy"></i>
-                        Simpan Restock
+                        <?= $isMasuk ? 'Simpan Restock' : 'Kurangi Stok' ?>
                     </button>
 
                     <a href="<?= app_e(app_url('/admin/restock')) ?>" class="restock-btn restock-btn-ghost">
@@ -312,8 +355,6 @@ if (!function_exists('restock_option_price')) {
                 </span>
 
                 <h4>Info Barang</h4>
-
-                <!-- <p>Pilih barang dulu. Iya, komputer belum bisa nebak barang dari niat baik.</p> -->
 
                 <ul>
                     <li>
@@ -338,8 +379,6 @@ if (!function_exists('restock_option_price')) {
 
                 <h4>Info Supplier</h4>
 
-                <!-- <p>Pilih supplier aktif yang menjadi sumber restock barang.</p> -->
-
                 <ul>
                     <li>
                         <i class="ti ti-user"></i>
@@ -351,6 +390,31 @@ if (!function_exists('restock_option_price')) {
                     </li>
                 </ul>
             </div>
+
+            <?php if ($isKeluar): ?>
+                <div class="restock-info-card restock-info-warning">
+                    <span class="restock-info-icon icon-warning">
+                        <i class="ti ti-alert-triangle"></i>
+                    </span>
+
+                    <h4>Perhatian</h4>
+
+                    <ul>
+                        <li>
+                            <i class="ti ti-x"></i>
+                            <span>Stok tidak boleh menjadi minus</span>
+                        </li>
+                        <li>
+                            <i class="ti ti-pencil"></i>
+                            <span>Alasan pengurangan wajib diisi</span>
+                        </li>
+                        <li>
+                            <i class="ti ti-history"></i>
+                            <span>Tercatat di riwayat stok</span>
+                        </li>
+                    </ul>
+                </div>
+            <?php endif; ?>
         </aside>
     </section>
 </div>

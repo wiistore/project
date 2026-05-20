@@ -171,6 +171,9 @@ $router->get('/kasir/transaksi/pdf/{id}', 'TransaksiController@kasirPdf');
 
 $router->get('/admin/riwayat-transaksi', 'RiwayatController@adminIndex');
 $router->get('/admin/riwayat-transaksi/detail/{id}', 'RiwayatController@adminDetail');
+$router->get('/admin/riwayat-transaksi/edit/{id}', 'RiwayatController@edit');
+$router->post('/admin/riwayat-transaksi/update/{id}', 'RiwayatController@update');
+$router->post('/admin/riwayat-transaksi/cancel/{id}', 'RiwayatController@cancel');
 
 /* |--------------------------------------------------------------------------
 | Laporan Routes

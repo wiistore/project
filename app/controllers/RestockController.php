@@ -23,11 +23,12 @@ class RestockController extends Controller
         // Ambil filter
         $tanggalMulai = trim($_GET['tanggal_mulai'] ?? '');
         $tanggalSelesai = trim($_GET['tanggal_selesai'] ?? '');
+        $filterTipe = trim($_GET['tipe'] ?? '');
 
         // Ambil data
-        if ($tanggalMulai !== '' || $tanggalSelesai !== '') {
-            $restocks = $this->restockModel->getByDateRange($tanggalMulai, $tanggalSelesai);
-            $summary = $this->restockModel->summary($tanggalMulai, $tanggalSelesai);
+        if ($tanggalMulai !== '' || $tanggalSelesai !== '' || $filterTipe !== '') {
+            $restocks = $this->restockModel->getFiltered($tanggalMulai, $tanggalSelesai, $filterTipe);
+            $summary = $this->restockModel->summary($tanggalMulai, $tanggalSelesai, $filterTipe);
         } else {
             $restocks = $this->restockModel->getAll();
             $summary = $this->restockModel->summary();
@@ -35,13 +36,14 @@ class RestockController extends Controller
 
         // Tampilkan halaman
         $this->view('admin/restock/index', [
-            'title' => 'Restock Barang',
+            'title' => 'Restock & Penyesuaian Stok',
             'activeMenu' => 'restock',
             'user' => Session::user(),
             'restocks' => $restocks,
             'summary' => $summary,
             'tanggalMulai' => $tanggalMulai,
             'tanggalSelesai' => $tanggalSelesai,
+            'filterTipe' => $filterTipe,
             'flash' => [
                 'success' => Session::getFlash('success'),
                 'error' => Session::getFlash('error'),
@@ -54,6 +56,12 @@ class RestockController extends Controller
         // Cek akses
         $this->requireRole('admin');
 
+        // Ambil tipe dari query string (default: masuk)
+        $tipe = trim($_GET['tipe'] ?? 'masuk');
+        if (!in_array($tipe, ['masuk', 'keluar'], true)) {
+            $tipe = 'masuk';
+        }
+
         // Ambil data form
         $barangs = $this->barangModel->getActive();
         $suppliers = $this->supplierModel->getActive();
@@ -63,16 +71,17 @@ class RestockController extends Controller
             $this->redirect('/admin/barang/create');
         }
 
-        if (empty($suppliers)) {
+        if ($tipe === 'masuk' && empty($suppliers)) {
             Session::setFlash('error', 'Belum ada supplier aktif. Tambahkan supplier dulu.');
             $this->redirect('/admin/supplier/create');
         }
 
         // Tampilkan form
         $this->view('admin/restock/form', [
-            'title' => 'Tambah Restock',
+            'title' => $tipe === 'masuk' ? 'Tambah Stok Masuk' : 'Kurangi Stok',
             'activeMenu' => 'restock',
             'user' => Session::user(),
+            'tipe' => $tipe,
             'barangs' => $barangs,
             'suppliers' => $suppliers,
             'formAction' => '/admin/restock/store',
@@ -89,8 +98,15 @@ class RestockController extends Controller
         // Cek akses
         $this->requireRole('admin');
 
+        // Ambil tipe
+        $tipe = trim($_POST['tipe'] ?? 'masuk');
+        if (!in_array($tipe, ['masuk', 'keluar'], true)) {
+            $tipe = 'masuk';
+        }
+
         // Validasi input
         $data = [
+            'tipe' => $tipe,
             'tanggal' => trim($_POST['tanggal'] ?? date('Y-m-d')),
             'id_barang' => trim($_POST['id_barang'] ?? ''),
             'id_supplier' => trim($_POST['id_supplier'] ?? ''),
@@ -98,6 +114,7 @@ class RestockController extends Controller
             'harga_beli' => trim($_POST['harga_beli'] ?? ''),
             'harga_jual_baru' => trim($_POST['harga_jual_baru'] ?? ''),
             'catatan' => trim($_POST['catatan'] ?? ''),
+            'alasan' => trim($_POST['alasan'] ?? ''),
             'id_user' => (int) Session::userId(),
         ];
 
@@ -116,7 +133,8 @@ class RestockController extends Controller
             }
         }
 
-        if (empty($errors['id_supplier'])) {
+        // Supplier wajib untuk tipe masuk
+        if ($tipe === 'masuk' && empty($errors['id_supplier'])) {
             $supplier = $this->supplierModel->findById((int) $data['id_supplier']);
 
             if (!$supplier) {
@@ -126,9 +144,19 @@ class RestockController extends Controller
             }
         }
 
+        // Validasi stok cukup untuk tipe keluar
+        if ($tipe === 'keluar' && $barang && empty($errors['qty'])) {
+            $stokSekarang = (int) ($barang['stok'] ?? 0);
+            $qtyKeluar = (int) $data['qty'];
+
+            if ($qtyKeluar > $stokSekarang) {
+                $errors['qty'] = 'Qty keluar (' . $qtyKeluar . ') melebihi stok tersedia (' . $stokSekarang . ').';
+            }
+        }
+
         if (!empty($errors)) {
             Session::set('_errors', $errors);
-            $this->redirect('/admin/restock/create');
+            $this->redirect('/admin/restock/create?tipe=' . $tipe);
         }
 
         // Simpan dengan transaction
@@ -137,36 +165,69 @@ class RestockController extends Controller
         try {
             $db->beginTransaction();
 
-            $restockId = $this->restockModel->create($data);
+            // Untuk tipe keluar, supplier bisa null
+            $restockData = [
+                'tipe' => $tipe,
+                'tanggal' => $data['tanggal'],
+                'id_barang' => (int) $data['id_barang'],
+                'id_supplier' => $tipe === 'masuk' ? (int) $data['id_supplier'] : ($data['id_supplier'] !== '' ? (int) $data['id_supplier'] : null),
+                'id_user' => $data['id_user'],
+                'qty' => (int) $data['qty'],
+                'harga_beli' => (float) $data['harga_beli'],
+                'harga_jual_baru' => $data['harga_jual_baru'],
+                'catatan' => $data['catatan'],
+                'alasan' => $tipe === 'keluar' ? $data['alasan'] : null,
+            ];
+
+            $restockId = $this->restockModel->create($restockData);
 
             if ($restockId <= 0) {
                 throw new RuntimeException('Gagal menyimpan data restock.');
             }
 
-            $stockUpdated = $this->barangModel->increaseStock(
-                (int) $data['id_barang'],
-                (int) $data['qty']
-            );
-
-            if (!$stockUpdated) {
-                throw new RuntimeException('Gagal menambah stok barang.');
-            }
-
-            if ($data['harga_jual_baru'] !== '') {
-                $hargaUpdated = $this->barangModel->updateHargaJual(
+            if ($tipe === 'masuk') {
+                // Tambah stok
+                $stockUpdated = $this->barangModel->increaseStock(
                     (int) $data['id_barang'],
-                    (float) $data['harga_jual_baru']
+                    (int) $data['qty']
                 );
 
-                if (!$hargaUpdated) {
-                    throw new RuntimeException('Gagal memperbarui harga jual barang.');
+                if (!$stockUpdated) {
+                    throw new RuntimeException('Gagal menambah stok barang.');
+                }
+
+                // Update harga jual jika diisi
+                if ($data['harga_jual_baru'] !== '') {
+                    $hargaUpdated = $this->barangModel->updateHargaJual(
+                        (int) $data['id_barang'],
+                        (float) $data['harga_jual_baru']
+                    );
+
+                    if (!$hargaUpdated) {
+                        throw new RuntimeException('Gagal memperbarui harga jual barang.');
+                    }
+                }
+            } else {
+                // Kurangi stok
+                $stockUpdated = $this->barangModel->decreaseStock(
+                    (int) $data['id_barang'],
+                    (int) $data['qty']
+                );
+
+                if (!$stockUpdated) {
+                    throw new RuntimeException('Gagal mengurangi stok barang. Stok tidak cukup.');
                 }
             }
 
             $db->commit();
 
             Session::remove('_old');
-            Session::setFlash('success', 'Restock berhasil disimpan dan stok barang sudah bertambah.');
+
+            $message = $tipe === 'masuk'
+                ? 'Restock berhasil disimpan dan stok barang sudah bertambah.'
+                : 'Stok barang berhasil dikurangi.';
+
+            Session::setFlash('success', $message);
             $this->redirect('/admin/restock');
         } catch (Throwable $error) {
             if ($db->inTransaction()) {
@@ -174,20 +235,28 @@ class RestockController extends Controller
             }
 
             Session::setFlash('error', APP_DEBUG ? $error->getMessage() : 'Restock gagal disimpan.');
-            $this->redirect('/admin/restock/create');
+            $this->redirect('/admin/restock/create?tipe=' . $tipe);
         }
     }
 
     private function validatePayload(array $data): array
     {
+        $tipe = $data['tipe'] ?? 'masuk';
+
         // Validasi dasar
-        $errors = Validator::validate($data, [
+        $rules = [
             'tanggal' => ['required', 'date'],
             'id_barang' => ['required', 'integer'],
-            'id_supplier' => ['required', 'integer'],
             'qty' => ['required', 'integer'],
             'harga_beli' => ['required', 'numeric'],
-        ]);
+        ];
+
+        // Supplier wajib hanya untuk tipe masuk
+        if ($tipe === 'masuk') {
+            $rules['id_supplier'] = ['required', 'integer'];
+        }
+
+        $errors = Validator::validate($data, $rules);
 
         // Validasi angka
         if ($data['qty'] !== '' && (int) $data['qty'] <= 0) {
@@ -204,6 +273,11 @@ class RestockController extends Controller
             } elseif ((float) $data['harga_jual_baru'] <= 0) {
                 $errors['harga_jual_baru'] = 'Harga jual baru harus lebih dari 0.';
             }
+        }
+
+        // Alasan wajib untuk tipe keluar
+        if ($tipe === 'keluar' && trim($data['alasan'] ?? '') === '') {
+            $errors['alasan'] = 'Alasan pengurangan stok wajib diisi.';
         }
 
         if ((int) ($data['id_user'] ?? 0) <= 0) {

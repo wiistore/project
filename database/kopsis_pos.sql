@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: May 16, 2026 at 07:59 PM
+-- Generation Time: May 20, 2026 at 10:00 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.3.28
 
@@ -115,14 +115,16 @@ INSERT INTO `kategori` (`id`, `nama`, `deskripsi`, `created_at`, `updated_at`) V
 CREATE TABLE `restock` (
   `id` int UNSIGNED NOT NULL,
   `tanggal` date NOT NULL,
+  `tipe` enum('masuk','keluar') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'masuk',
   `id_barang` int UNSIGNED NOT NULL,
-  `id_supplier` int UNSIGNED NOT NULL,
+  `id_supplier` int UNSIGNED NULL DEFAULT NULL,
   `id_user` int UNSIGNED NOT NULL,
   `qty` int NOT NULL,
   `harga_beli` decimal(12,2) NOT NULL,
   `harga_jual_baru` decimal(12,2) DEFAULT NULL,
   `total_nilai` decimal(14,2) NOT NULL,
   `catatan` text COLLATE utf8mb4_unicode_ci,
+  `alasan` text COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -130,10 +132,10 @@ CREATE TABLE `restock` (
 -- Dumping data for table `restock`
 --
 
-INSERT INTO `restock` (`id`, `tanggal`, `id_barang`, `id_supplier`, `id_user`, `qty`, `harga_beli`, `harga_jual_baru`, `total_nilai`, `catatan`, `created_at`) VALUES
-(1, '2026-05-15', 2, 1, 1, 20, 1000.00, 1999.00, 20000.00, 'tak taoh', '2026-05-15 14:21:39'),
-(2, '2026-05-16', 3, 2, 1, 50, 1000.00, NULL, 50000.00, 'difarom', '2026-05-16 12:58:26'),
-(3, '2026-05-16', 2, 1, 1, 10, 1000.00, NULL, 10000.00, NULL, '2026-05-16 14:11:28');
+INSERT INTO `restock` (`id`, `tanggal`, `tipe`, `id_barang`, `id_supplier`, `id_user`, `qty`, `harga_beli`, `harga_jual_baru`, `total_nilai`, `catatan`, `alasan`, `created_at`) VALUES
+(1, '2026-05-15', 'masuk', 2, 1, 1, 20, 1000.00, 1999.00, 20000.00, 'tak taoh', NULL, '2026-05-15 14:21:39'),
+(2, '2026-05-16', 'masuk', 3, 2, 1, 50, 1000.00, NULL, 50000.00, 'difarom', NULL, '2026-05-16 12:58:26'),
+(3, '2026-05-16', 'masuk', 2, 1, 1, 10, 1000.00, NULL, 10000.00, NULL, NULL, '2026-05-16 14:11:28');
 
 -- --------------------------------------------------------
 
@@ -178,6 +180,9 @@ CREATE TABLE `transaksi` (
   `metode_bayar` enum('cash','transfer','qris','ewallet') COLLATE utf8mb4_unicode_ci NOT NULL,
   `nominal_bayar` decimal(14,2) NOT NULL DEFAULT '0.00',
   `kembalian` decimal(14,2) NOT NULL DEFAULT '0.00',
+  `status` enum('selesai','diubah','dibatalkan') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'selesai',
+  `alasan_batal` text COLLATE utf8mb4_unicode_ci,
+  `edited_at` datetime DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -185,15 +190,15 @@ CREATE TABLE `transaksi` (
 -- Dumping data for table `transaksi`
 --
 
-INSERT INTO `transaksi` (`id`, `kode_transaksi`, `id_user`, `tanggal`, `total_jual`, `total_beli`, `total_laba`, `metode_bayar`, `nominal_bayar`, `kembalian`, `created_at`) VALUES
-(1, 'TRX20260515212229283', 1, '2026-05-15 21:22:29', 9995.00, 5000.00, 4995.00, 'cash', 10000.00, 5.00, '2026-05-15 14:22:29'),
-(2, 'TRX20260515213837462', 1, '2026-05-15 21:38:37', 9995.00, 5000.00, 4995.00, 'cash', 10000.00, 5.00, '2026-05-15 14:38:37'),
-(3, 'TRX20260515214052235', 1, '2026-05-15 21:40:52', 5997.00, 3000.00, 2997.00, 'cash', 20000.00, 14003.00, '2026-05-15 14:40:52'),
-(4, 'TRX20260515215612333', 1, '2026-05-15 21:56:12', 3998.00, 2000.00, 1998.00, 'cash', 4999.00, 1001.00, '2026-05-15 14:56:12'),
-(5, 'TRX20260516022908519', 1, '2026-05-16 02:29:08', 5997.00, 3000.00, 2997.00, 'cash', 10000.00, 4003.00, '2026-05-15 19:29:08'),
-(6, 'TRX20260516023530980', 1, '2026-05-16 02:35:30', 3998.00, 2000.00, 1998.00, 'cash', 10000.00, 6002.00, '2026-05-15 19:35:30'),
-(7, 'TRX20260516204153875', 1, '2026-05-16 20:41:53', 10000.00, 5000.00, 5000.00, 'qris', 10000.00, 0.00, '2026-05-16 13:41:53'),
-(8, 'TRX20260517020848915', 1, '2026-05-17 02:08:48', 11998.00, 6000.00, 5998.00, 'cash', 20000.00, 8002.00, '2026-05-16 19:08:48');
+INSERT INTO `transaksi` (`id`, `kode_transaksi`, `id_user`, `tanggal`, `total_jual`, `total_beli`, `total_laba`, `metode_bayar`, `nominal_bayar`, `kembalian`, `status`, `alasan_batal`, `edited_at`, `created_at`) VALUES
+(1, 'TRX20260515212229283', 1, '2026-05-15 21:22:29', 9995.00, 5000.00, 4995.00, 'cash', 10000.00, 5.00, 'selesai', NULL, NULL, '2026-05-15 14:22:29'),
+(2, 'TRX20260515213837462', 1, '2026-05-15 21:38:37', 9995.00, 5000.00, 4995.00, 'cash', 10000.00, 5.00, 'selesai', NULL, NULL, '2026-05-15 14:38:37'),
+(3, 'TRX20260515214052235', 1, '2026-05-15 21:40:52', 5997.00, 3000.00, 2997.00, 'cash', 20000.00, 14003.00, 'selesai', NULL, NULL, '2026-05-15 14:40:52'),
+(4, 'TRX20260515215612333', 1, '2026-05-15 21:56:12', 3998.00, 2000.00, 1998.00, 'cash', 4999.00, 1001.00, 'selesai', NULL, NULL, '2026-05-15 14:56:12'),
+(5, 'TRX20260516022908519', 1, '2026-05-16 02:29:08', 5997.00, 3000.00, 2997.00, 'cash', 10000.00, 4003.00, 'selesai', NULL, NULL, '2026-05-15 19:29:08'),
+(6, 'TRX20260516023530980', 1, '2026-05-16 02:35:30', 3998.00, 2000.00, 1998.00, 'cash', 10000.00, 6002.00, 'selesai', NULL, NULL, '2026-05-15 19:35:30'),
+(7, 'TRX20260516204153875', 1, '2026-05-16 20:41:53', 10000.00, 5000.00, 5000.00, 'qris', 10000.00, 0.00, 'selesai', NULL, NULL, '2026-05-16 13:41:53'),
+(8, 'TRX20260517020848915', 1, '2026-05-17 02:08:48', 11998.00, 6000.00, 5998.00, 'cash', 20000.00, 8002.00, 'selesai', NULL, NULL, '2026-05-16 19:08:48');
 
 -- --------------------------------------------------------
 
@@ -259,7 +264,8 @@ ALTER TABLE `restock`
   ADD KEY `fk_restock_barang` (`id_barang`),
   ADD KEY `idx_restock_tanggal` (`tanggal`),
   ADD KEY `idx_restock_supplier` (`id_supplier`),
-  ADD KEY `fk_restock_user` (`id_user`);
+  ADD KEY `fk_restock_user` (`id_user`),
+  ADD KEY `idx_restock_tipe` (`tipe`);
 
 --
 -- Indexes for table `supplier`
@@ -275,7 +281,8 @@ ALTER TABLE `transaksi`
   ADD UNIQUE KEY `kode_transaksi` (`kode_transaksi`),
   ADD KEY `idx_transaksi_tanggal` (`tanggal`),
   ADD KEY `idx_transaksi_user` (`id_user`),
-  ADD KEY `idx_transaksi_metode` (`metode_bayar`);
+  ADD KEY `idx_transaksi_metode` (`metode_bayar`),
+  ADD KEY `idx_transaksi_status` (`status`);
 
 --
 -- Indexes for table `users`

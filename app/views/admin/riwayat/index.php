@@ -70,6 +70,18 @@ if (!function_exists('riwayat_method_icon')) {
     }
 }
 
+if (!function_exists('riwayat_status_badge')) {
+    function riwayat_status_badge(string $status): string
+    {
+        return match ($status) {
+            'selesai' => '<span class="riwayat-status-badge status-selesai"><i class="ti ti-circle-check"></i> Selesai</span>',
+            'diubah' => '<span class="riwayat-status-badge status-diubah"><i class="ti ti-pencil"></i> Diubah</span>',
+            'dibatalkan' => '<span class="riwayat-status-badge status-dibatalkan"><i class="ti ti-x"></i> Dibatalkan</span>',
+            default => '<span class="riwayat-status-badge status-selesai"><i class="ti ti-circle-check"></i> Selesai</span>',
+        };
+    }
+}
+
 $totalTransaksi = (int) ($summary['total_transaksi'] ?? count($transaksis));
 $totalPenjualan = (float) ($summary['total_penjualan'] ?? 0);
 $totalModal = (float) ($summary['total_modal'] ?? 0);
@@ -83,6 +95,11 @@ $methodCounts = [
 ];
 
 foreach ($transaksis as $transaksi) {
+    $statusCount = $transaksi['status'] ?? 'selesai';
+    if ($statusCount === 'dibatalkan') {
+        continue;
+    }
+
     $method = strtolower((string) ($transaksi['metode_bayar'] ?? ''));
 
     if (!isset($methodCounts[$method])) {
@@ -102,7 +119,7 @@ $summaryCards = [
         'icon' => 'ti ti-receipt',
         'label' => 'Total Transaksi',
         'value' => (string) $totalTransaksi,
-        'desc' => 'Data yang tampil',
+        'desc' => 'Transaksi valid',
     ],
     [
         'class' => 'summary-blue',
@@ -158,7 +175,6 @@ $summaryClass = $summaryCount <= 4 ? 'summary-count-' . $summaryCount : 'summary
             </span>
 
             <h2>Riwayat Transaksi</h2>
-
         </div>
 
         <div class="riwayat-hero-actions">
@@ -250,7 +266,7 @@ $summaryClass = $summaryCount <= 4 ? 'summary-count-' . $summaryCount : 'summary
                 <h4>Belum ada transaksi</h4>
 
                 <p>
-                    Belum ada riwayat sesuai filter ini. Entah memang sepi, atau filternya terlalu ambisius.
+                    Belum ada riwayat sesuai filter ini.
                 </p>
 
                 <a href="<?= app_e(app_url('/admin/transaksi')) ?>" class="riwayat-btn riwayat-btn-form">
@@ -269,10 +285,8 @@ $summaryClass = $summaryCount <= 4 ? 'summary-count-' . $summaryCount : 'summary
                             <th>Kasir</th>
                             <th>Metode</th>
                             <th>Total</th>
-                            <th>Modal</th>
                             <th>Laba</th>
-                            <th>Bayar</th>
-                            <th>Kembalian</th>
+                            <th>Status</th>
                             <th class="text-end">Aksi</th>
                         </tr>
                     </thead>
@@ -285,12 +299,12 @@ $summaryClass = $summaryCount <= 4 ? 'summary-count-' . $summaryCount : 'summary
                             $tanggal = (string) ($transaksi['tanggal'] ?? '');
                             $kasir = (string) ($transaksi['nama_kasir'] ?? '-');
                             $method = strtolower((string) ($transaksi['metode_bayar'] ?? '-'));
+                            $statusRow = (string) ($transaksi['status'] ?? 'selesai');
 
                             $totalJualRow = (float) ($transaksi['total_jual'] ?? 0);
-                            $totalBeliRow = (float) ($transaksi['total_beli'] ?? 0);
                             $totalLabaRow = (float) ($transaksi['total_laba'] ?? 0);
-                            $nominalBayarRow = (float) ($transaksi['nominal_bayar'] ?? 0);
-                            $kembalianRow = (float) ($transaksi['kembalian'] ?? 0);
+
+                            $isDibatalkan = $statusRow === 'dibatalkan';
 
                             $searchText = strtolower(implode(' ', [
                                 $kode,
@@ -298,6 +312,7 @@ $summaryClass = $summaryCount <= 4 ? 'summary-count-' . $summaryCount : 'summary
                                 $kasir,
                                 $method,
                                 riwayat_method_label($method),
+                                $statusRow,
                                 $totalJualRow,
                                 $totalLabaRow,
                             ]));
@@ -307,6 +322,7 @@ $summaryClass = $summaryCount <= 4 ? 'summary-count-' . $summaryCount : 'summary
                                 data-riwayat-row
                                 data-search="<?= app_e($searchText) ?>"
                                 data-method="<?= app_e($method) ?>"
+                                class="<?= $isDibatalkan ? 'row-dibatalkan' : '' ?>"
                             >
                                 <td>
                                     <span class="riwayat-number"><?= app_e((string) ($index + 1)) ?></span>
@@ -347,33 +363,19 @@ $summaryClass = $summaryCount <= 4 ? 'summary-count-' . $summaryCount : 'summary
                                 </td>
 
                                 <td>
-                                    <strong class="riwayat-money">
+                                    <strong class="riwayat-money <?= $isDibatalkan ? 'is-muted' : '' ?>">
                                         <?= app_e(riwayat_money($totalJualRow)) ?>
                                     </strong>
                                 </td>
 
                                 <td>
-                                    <strong class="riwayat-money is-muted">
-                                        <?= app_e(riwayat_money($totalBeliRow)) ?>
-                                    </strong>
-                                </td>
-
-                                <td>
-                                    <strong class="riwayat-money <?= $totalLabaRow >= 0 ? 'is-profit' : 'is-loss' ?>">
+                                    <strong class="riwayat-money <?= $isDibatalkan ? 'is-muted' : ($totalLabaRow >= 0 ? 'is-profit' : 'is-loss') ?>">
                                         <?= app_e(riwayat_money($totalLabaRow)) ?>
                                     </strong>
                                 </td>
 
                                 <td>
-                                    <strong class="riwayat-money">
-                                        <?= app_e(riwayat_money($nominalBayarRow)) ?>
-                                    </strong>
-                                </td>
-
-                                <td>
-                                    <strong class="riwayat-money is-change">
-                                        <?= app_e(riwayat_money($kembalianRow)) ?>
-                                    </strong>
+                                    <?= riwayat_status_badge($statusRow) ?>
                                 </td>
 
                                 <td>
@@ -382,27 +384,37 @@ $summaryClass = $summaryCount <= 4 ? 'summary-count-' . $summaryCount : 'summary
                                             href="<?= app_e(app_url('/admin/riwayat-transaksi/detail/' . $id)) ?>"
                                             class="riwayat-action-btn action-detail"
                                             title="Lihat detail"
-                                            aria-label="Lihat detail transaksi"
                                         >
                                             <i class="ti ti-eye"></i>
                                         </a>
+
+                                        <?php if (!$isDibatalkan): ?>
+                                            <a
+                                                href="<?= app_e(app_url('/admin/riwayat-transaksi/edit/' . $id)) ?>"
+                                                class="riwayat-action-btn action-edit"
+                                                title="Edit transaksi"
+                                            >
+                                                <i class="ti ti-pencil"></i>
+                                            </a>
+
+                                            <button
+                                                type="button"
+                                                class="riwayat-action-btn action-cancel"
+                                                title="Batalkan transaksi"
+                                                data-cancel-btn
+                                                data-cancel-id="<?= app_e((string) $id) ?>"
+                                                data-cancel-kode="<?= app_e($kode) ?>"
+                                            >
+                                                <i class="ti ti-x"></i>
+                                            </button>
+                                        <?php endif; ?>
 
                                         <a
                                             href="<?= app_e(app_url('/admin/transaksi/struk/' . $id)) ?>"
                                             class="riwayat-action-btn action-struk"
                                             title="Lihat struk"
-                                            aria-label="Lihat struk transaksi"
                                         >
                                             <i class="ti ti-receipt"></i>
-                                        </a>
-
-                                        <a
-                                            href="<?= app_e(app_url('/admin/transaksi/pdf/' . $id)) ?>"
-                                            class="riwayat-action-btn action-pdf"
-                                            title="Download PDF"
-                                            aria-label="Download PDF transaksi"
-                                        >
-                                            <i class="ti ti-file-download"></i>
                                         </a>
                                     </div>
                                 </td>
@@ -419,13 +431,96 @@ $summaryClass = $summaryCount <= 4 ? 'summary-count-' . $summaryCount : 'summary
                     <h4>Data tidak ketemu</h4>
 
                     <p>
-                        Keyword atau filter terlalu spesifik. Database bukan cenayang, dia cuma cocokkan teks.
+                        Keyword atau filter terlalu spesifik.
                     </p>
                 </div>
             </div>
         <?php endif; ?>
     </section>
 </div>
+
+<!-- Modal Batalkan Transaksi -->
+<div class="riwayat-modal-overlay" id="cancelModal" hidden>
+    <div class="riwayat-modal">
+        <div class="riwayat-modal-header">
+            <h3><i class="ti ti-alert-triangle"></i> Batalkan Transaksi</h3>
+            <button type="button" class="riwayat-modal-close" data-cancel-modal-close>
+                <i class="ti ti-x"></i>
+            </button>
+        </div>
+
+        <form id="cancelForm" method="POST" action="">
+            <div class="riwayat-modal-body">
+                <p>Anda yakin ingin membatalkan transaksi <strong id="cancelKode"></strong>?</p>
+                <p class="riwayat-modal-warning">
+                    <i class="ti ti-info-circle"></i>
+                    Stok barang akan dikembalikan. Transaksi tidak akan masuk laporan.
+                </p>
+
+                <div class="riwayat-modal-field">
+                    <label for="alasan_batal">
+                        Alasan Pembatalan <span>*</span>
+                    </label>
+                    <textarea
+                        id="alasan_batal"
+                        name="alasan_batal"
+                        rows="3"
+                        placeholder="Tulis alasan pembatalan (wajib)"
+                        required
+                    ></textarea>
+                </div>
+            </div>
+
+            <div class="riwayat-modal-footer">
+                <button type="submit" class="riwayat-btn riwayat-btn-danger">
+                    <i class="ti ti-x"></i>
+                    Batalkan Transaksi
+                </button>
+
+                <button type="button" class="riwayat-btn riwayat-btn-ghost" data-cancel-modal-close>
+                    Batal
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Cancel modal logic
+    const modal = document.getElementById('cancelModal');
+    const form = document.getElementById('cancelForm');
+    const kodeEl = document.getElementById('cancelKode');
+    const closeBtns = document.querySelectorAll('[data-cancel-modal-close]');
+    const cancelBtns = document.querySelectorAll('[data-cancel-btn]');
+
+    cancelBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const id = this.getAttribute('data-cancel-id');
+            const kode = this.getAttribute('data-cancel-kode');
+
+            form.action = '<?= app_e(app_url('/admin/riwayat-transaksi/cancel/')) ?>' + id;
+            kodeEl.textContent = kode;
+            modal.hidden = false;
+        });
+    });
+
+    closeBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            modal.hidden = true;
+            form.action = '';
+            kodeEl.textContent = '';
+            document.getElementById('alasan_batal').value = '';
+        });
+    });
+
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.hidden = true;
+        }
+    });
+});
+</script>
 
 <script src="<?= app_e(app_asset_versioned('assets/js/riwayat.js')) ?>"></script>
 
