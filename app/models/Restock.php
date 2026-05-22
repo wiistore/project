@@ -332,6 +332,43 @@ class Restock extends Model
         return $this->countRows($sql);
     }
 
+    public function getPaginated(int $page = 1, int $perPage = 10): array
+    {
+        $page = max(1, $page);
+        $perPage = max(1, min($perPage, 100));
+        $offset = ($page - 1) * $perPage;
+
+        $sql = "
+            SELECT
+                r.id,
+                r.tanggal,
+                r.tipe,
+                r.id_barang,
+                b.kode_barang,
+                b.nama AS nama_barang,
+                b.satuan,
+                r.id_supplier,
+                COALESCE(s.nama, '-') AS nama_supplier,
+                r.id_user,
+                u.username AS dibuat_oleh,
+                r.qty,
+                r.harga_beli,
+                r.harga_jual_baru,
+                r.total_nilai,
+                r.catatan,
+                r.alasan,
+                r.created_at
+            FROM {$this->table} r
+            INNER JOIN barang b ON b.id = r.id_barang
+            LEFT JOIN supplier s ON s.id = r.id_supplier
+            INNER JOIN users u ON u.id = r.id_user
+            ORDER BY r.tanggal DESC, r.id DESC
+            LIMIT {$perPage} OFFSET {$offset}
+        ";
+
+        return $this->fetchAll($sql);
+    }
+
     private function nullableText($value)
     {
         $value = trim((string) $value);

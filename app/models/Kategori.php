@@ -159,4 +159,25 @@ class Kategori extends Model
 
         return $this->countRows($sql);
     }
+
+    public function getPaginated(int $page = 1, int $perPage = 10): array
+    {
+        $page = max(1, $page);
+        $perPage = max(1, min($perPage, 100));
+        $offset = ($page - 1) * $perPage;
+
+        $sql = "
+            SELECT 
+                id,
+                nama,
+                deskripsi,
+                created_at,
+                updated_at
+            FROM {$this->table}
+            ORDER BY nama ASC
+            LIMIT {$perPage} OFFSET {$offset}
+        ";
+
+        return $this->fetchAll($sql);
+    }
 }

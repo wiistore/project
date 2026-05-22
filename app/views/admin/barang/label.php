@@ -50,7 +50,7 @@ if (!function_exists('label_app_asset')) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= label_e($title) ?> - <?= label_e($appName) ?></title>
 
-    <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" rel="stylesheet">
+    <link href="<?= label_app_asset('assets/vendor/tabler-icons.min.css') ?>" rel="stylesheet">
 
     <style>
         * {
@@ -190,11 +190,11 @@ if (!function_exists('label_app_asset')) {
         .label-sheet {
             width: 210mm;
             min-height: 297mm;
-            padding: 10mm 8mm;
+            padding: 8mm 6mm;
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            grid-auto-rows: minmax(40mm, auto);
-            gap: 4mm;
+            grid-auto-rows: minmax(30mm, auto);
+            gap: 2mm;
             page-break-after: always;
         }
 
@@ -202,50 +202,51 @@ if (!function_exists('label_app_asset')) {
         .label-item {
             border: 1px dashed #94a3b8;
             border-radius: 4px;
-            padding: 4mm 3mm;
+            padding: 2mm 2mm;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
             text-align: center;
             background: #ffffff;
             page-break-inside: avoid;
             break-inside: avoid;
+            gap: 1mm;
         }
 
         .label-item-store {
-            font-size: 8.5pt;
+            font-size: 7.5pt;
             font-weight: 700;
             color: #128048;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            line-height: 1.2;
-            margin-bottom: 2mm;
+            line-height: 1.1;
+            margin: 0;
         }
 
         .label-item-name {
-            font-size: 9pt;
+            font-size: 8pt;
             font-weight: 700;
             color: #0f172a;
-            line-height: 1.25;
-            margin: 0 0 2mm;
+            line-height: 1.15;
+            margin: 0;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            min-height: 22pt;
+            min-height: 18pt;
             word-break: break-word;
         }
 
         .label-item-barcode {
-            margin: 0 auto 1mm;
+            margin: 0 auto;
             max-width: 100%;
             height: auto;
         }
 
         .label-item-code {
             font-family: 'Courier New', monospace;
-            font-size: 7.5pt;
+            font-size: 7pt;
             font-weight: 600;
             color: #1e293b;
             letter-spacing: 0.5px;
@@ -254,10 +255,10 @@ if (!function_exists('label_app_asset')) {
         }
 
         .label-item-price {
-            font-size: 11pt;
+            font-size: 10pt;
             font-weight: 800;
             color: #128048;
-            margin-top: 2mm;
+            margin: 0;
             line-height: 1;
         }
 
@@ -332,7 +333,7 @@ if (!function_exists('label_app_asset')) {
 
     <div class="label-toolbar-right">
         <?php if ($mode === 'single' && $sourceBarang): ?>
-            <form action="" method="GET" class="label-qty-control">
+            <form action="<?= label_e(label_app_url('/admin/barang/label/' . ($sourceBarang['id'] ?? ''))) ?>" method="GET" class="label-qty-control">
                 <label for="qty">Jumlah:</label>
                 <input
                     type="number"
@@ -407,7 +408,7 @@ if (!function_exists('label_app_asset')) {
     <?php endforeach; ?>
 <?php endif; ?>
 
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<script src="<?= label_app_asset('assets/vendor/JsBarcode.all.min.js') ?>"></script>
 <script>
     (function () {
         'use strict';

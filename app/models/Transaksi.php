@@ -366,6 +366,57 @@ class Transaksi extends Model
         return in_array($method, ['cash', 'transfer', 'qris', 'ewallet'], true);
     }
 
+    public function updateMetodeBayar(int $id, string $metodeBayar): bool
+    {
+        if (!$this->isValidPaymentMethod($metodeBayar)) {
+            return false;
+        }
+
+        $sql = "
+            UPDATE {$this->table}
+            SET metode_bayar = :metode_bayar
+            WHERE id = :id
+            LIMIT 1
+        ";
+
+        return $this->execute($sql, [
+            'metode_bayar' => $metodeBayar,
+            'id' => $id,
+        ]);
+    }
+
+    public function getPaginated(int $page = 1, int $perPage = 10): array
+    {
+        $page = max(1, $page);
+        $perPage = max(1, min($perPage, 100));
+        $offset = ($page - 1) * $perPage;
+
+        $sql = "
+            SELECT
+                t.id,
+                t.kode_transaksi,
+                t.id_user,
+                u.username AS nama_kasir,
+                t.tanggal,
+                t.total_jual,
+                t.total_beli,
+                t.total_laba,
+                t.metode_bayar,
+                t.nominal_bayar,
+                t.kembalian,
+                t.status,
+                t.alasan_batal,
+                t.edited_at,
+                t.created_at
+            FROM {$this->table} t
+            INNER JOIN users u ON u.id = t.id_user
+            ORDER BY t.tanggal DESC, t.id DESC
+            LIMIT {$perPage} OFFSET {$offset}
+        ";
+
+        return $this->fetchAll($sql);
+    }
+
     public function countAll(): int
     {
         $sql = "

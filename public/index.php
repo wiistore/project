@@ -95,6 +95,7 @@ $router->post('/admin/kategori/store', 'KategoriController@store');
 $router->get('/admin/kategori/edit/{id}', 'KategoriController@edit');
 $router->post('/admin/kategori/update/{id}', 'KategoriController@update');
 $router->post('/admin/kategori/delete/{id}', 'KategoriController@delete');
+$router->post('/admin/kategori/toggle/{id}', 'KategoriController@toggleStatus');
 
 /*
 |--------------------------------------------------------------------------
@@ -112,6 +113,7 @@ $router->post('/admin/barang/store', 'BarangController@store');
 $router->get('/admin/barang/edit/{id}', 'BarangController@edit');
 $router->post('/admin/barang/update/{id}', 'BarangController@update');
 $router->post('/admin/barang/delete/{id}', 'BarangController@delete');
+$router->post('/admin/barang/toggle/{id}', 'BarangController@toggleStatus');
 
 /*
 |--------------------------------------------------------------------------
@@ -125,6 +127,7 @@ $router->post('/admin/supplier/store', 'SupplierController@store');
 $router->get('/admin/supplier/edit/{id}', 'SupplierController@edit');
 $router->post('/admin/supplier/update/{id}', 'SupplierController@update');
 $router->post('/admin/supplier/delete/{id}', 'SupplierController@delete');
+$router->post('/admin/supplier/toggle/{id}', 'SupplierController@toggleStatus');
 
 /*
 |--------------------------------------------------------------------------
@@ -150,6 +153,7 @@ $router->post('/admin/user/update/{id}', 'UserController@update');
 $router->get('/admin/user/reset-password/{id}', 'UserController@resetPassword');
 $router->post('/admin/user/reset-password/{id}', 'UserController@updatePassword');
 $router->post('/admin/user/delete/{id}', 'UserController@delete');
+$router->post('/admin/user/toggle/{id}', 'UserController@toggleStatus');
 
 /* |--------------------------------------------------------------------------
 | Transaksi Routes

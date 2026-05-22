@@ -131,7 +131,17 @@ if (!function_exists('edit_money')) {
                                 <strong id="editCartTotal">Rp 0</strong>
                             </div>
 
-                            <?php if ($isCash): ?>
+                            <div class="riwayat-edit-summary-row is-info">
+                                <label for="editMetodeBayar">Metode Bayar</label>
+                                <select id="editMetodeBayar" name="metode_bayar" class="riwayat-edit-nominal-input" style="width:140px;">
+                                    <option value="cash" <?= $metodeBayar === 'cash' ? 'selected' : '' ?>>Cash</option>
+                                    <option value="qris" <?= $metodeBayar === 'qris' ? 'selected' : '' ?>>QRIS</option>
+                                    <option value="transfer" <?= $metodeBayar === 'transfer' ? 'selected' : '' ?>>Transfer</option>
+                                    <option value="ewallet" <?= $metodeBayar === 'ewallet' ? 'selected' : '' ?>>E-Wallet</option>
+                                </select>
+                            </div>
+
+                            <div id="editCashSection" style="<?= $isCash ? '' : 'display:none;' ?>">
                                 <div class="riwayat-edit-summary-row">
                                     <label for="editNominalBayar">Nominal Bayar</label>
                                     <input
@@ -149,13 +159,6 @@ if (!function_exists('edit_money')) {
                                     <span>Kembalian</span>
                                     <strong id="editCartKembalian">Rp 0</strong>
                                 </div>
-                            <?php else: ?>
-                                <input type="hidden" name="nominal_bayar" value="0">
-                            <?php endif; ?>
-
-                            <div class="riwayat-edit-summary-row is-info">
-                                <span>Metode Bayar</span>
-                                <strong><?= app_e(ucfirst($metodeBayar)) ?></strong>
                             </div>
                         </div>
 
@@ -221,7 +224,9 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     <?php endforeach; ?>
 
-    const isCash = <?= $isCash ? 'true' : 'false' ?>;
+    let isCash = <?= $isCash ? 'true' : 'false' ?>;
+    const metodeBayarSelect = document.getElementById('editMetodeBayar');
+    const cashSection = document.getElementById('editCashSection');
     const cartItemsEl = document.getElementById('editCartItems');
     const cartEmptyEl = document.getElementById('editCartEmpty');
     const cartCountEl = document.getElementById('editCartCount');
@@ -407,6 +412,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 const text = el.getAttribute('data-search-text');
                 el.style.display = keyword === '' || text.includes(keyword) ? '' : 'none';
             });
+        });
+    }
+
+    // Event: metode bayar change
+    if (metodeBayarSelect) {
+        metodeBayarSelect.addEventListener('change', function() {
+            isCash = this.value === 'cash';
+            if (isCash) {
+                cashSection.style.display = '';
+            } else {
+                cashSection.style.display = 'none';
+            }
+            renderCart();
         });
     }
 

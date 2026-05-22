@@ -440,6 +440,169 @@ $summaryClass = $summaryCount <= 4 ? 'summary-count-' . $summaryCount : 'summary
 </div>
 
 <!-- Modal Batalkan Transaksi -->
+<style>
+.riwayat-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(2px);
+}
+.riwayat-modal-overlay[hidden] {
+    display: none;
+}
+.riwayat-modal {
+    background: #ffffff;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.25s ease;
+}
+@keyframes modalSlideIn {
+    from { opacity: 0; transform: translateY(-20px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.riwayat-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid #f1f5f9;
+}
+.riwayat-modal-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.riwayat-modal-header h3 i {
+    color: #f59e0b;
+    font-size: 1.3rem;
+}
+.riwayat-modal-close {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: #f1f5f9;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    transition: background 0.15s, color 0.15s;
+}
+.riwayat-modal-close:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+}
+.riwayat-modal-body {
+    padding: 20px 24px;
+}
+.riwayat-modal-body p {
+    margin: 0 0 12px;
+    color: #334155;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+.riwayat-modal-warning {
+    background: #fef3c7;
+    border: 1px solid #fcd34d;
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 0.85rem;
+    color: #92400e;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 16px !important;
+}
+.riwayat-modal-warning i {
+    color: #d97706;
+    font-size: 1.1rem;
+    margin-top: 1px;
+}
+.riwayat-modal-field {
+    margin-top: 4px;
+}
+.riwayat-modal-field label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 6px;
+}
+.riwayat-modal-field label span {
+    color: #ef4444;
+}
+.riwayat-modal-field textarea {
+    width: 100%;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 0.9rem;
+    resize: vertical;
+    transition: border-color 0.15s;
+    font-family: inherit;
+}
+.riwayat-modal-field textarea:focus {
+    outline: none;
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+.riwayat-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 24px 20px;
+    border-top: 1px solid #f1f5f9;
+}
+.riwayat-modal-footer .riwayat-btn-danger {
+    background: #ef4444;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.15s;
+}
+.riwayat-modal-footer .riwayat-btn-danger:hover {
+    background: #dc2626;
+}
+.riwayat-modal-footer .riwayat-btn-ghost {
+    background: none;
+    border: 1px solid #e2e8f0;
+    color: #64748b;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+.riwayat-modal-footer .riwayat-btn-ghost:hover {
+    background: #f8fafc;
+    color: #334155;
+}
+</style>
+
 <div class="riwayat-modal-overlay" id="cancelModal" hidden>
     <div class="riwayat-modal">
         <div class="riwayat-modal-header">
@@ -523,6 +686,13 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <script src="<?= app_e(app_asset_versioned('assets/js/riwayat.js')) ?>"></script>
+
+<?php
+$pagination = $pagination ?? null;
+if ($pagination) {
+    require APP_PATH . '/views/components/pagination.php';
+}
+?>
 
 <?php require APP_PATH . '/views/layouts/footer.php'; ?>
 <?php require APP_PATH . '/views/layouts/scripts.php'; ?>

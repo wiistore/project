@@ -29,9 +29,22 @@ class RestockController extends Controller
         if ($tanggalMulai !== '' || $tanggalSelesai !== '' || $filterTipe !== '') {
             $restocks = $this->restockModel->getFiltered($tanggalMulai, $tanggalSelesai, $filterTipe);
             $summary = $this->restockModel->summary($tanggalMulai, $tanggalSelesai, $filterTipe);
+            $pagination = null;
         } else {
-            $restocks = $this->restockModel->getAll();
+            // Pagination
+            $page = max(1, (int) ($_GET['page'] ?? 1));
+            $perPage = 10;
+            $total = $this->restockModel->countAll();
+            $totalPages = max(1, (int) ceil($total / $perPage));
+
+            $restocks = $this->restockModel->getPaginated($page, $perPage);
             $summary = $this->restockModel->summary();
+            $pagination = [
+                'current_page' => $page,
+                'per_page' => $perPage,
+                'total' => $total,
+                'total_pages' => $totalPages,
+            ];
         }
 
         // Tampilkan halaman
@@ -41,6 +54,7 @@ class RestockController extends Controller
             'user' => Session::user(),
             'restocks' => $restocks,
             'summary' => $summary,
+            'pagination' => $pagination,
             'tanggalMulai' => $tanggalMulai,
             'tanggalSelesai' => $tanggalSelesai,
             'filterTipe' => $filterTipe,

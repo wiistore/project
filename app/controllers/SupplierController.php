@@ -16,8 +16,14 @@ class SupplierController extends Controller
         // Cek akses
         $this->requireRole('admin');
 
+        // Pagination
+        $page = max(1, (int) ($_GET['page'] ?? 1));
+        $perPage = 10;
+        $total = $this->supplierModel->countAll();
+        $totalPages = max(1, (int) ceil($total / $perPage));
+
         // Ambil data
-        $suppliers = $this->supplierModel->getAll();
+        $suppliers = $this->supplierModel->getPaginated($page, $perPage);
 
         // Tampilkan halaman
         $this->view('admin/supplier/index', [
@@ -25,6 +31,12 @@ class SupplierController extends Controller
             'activeMenu' => 'supplier',
             'user' => Session::user(),
             'suppliers' => $suppliers,
+            'pagination' => [
+                'current_page' => $page,
+                'per_page' => $perPage,
+                'total' => $total,
+                'total_pages' => $totalPages,
+            ],
             'flash' => [
                 'success' => Session::getFlash('success'),
                 'error' => Session::getFlash('error'),
@@ -201,21 +213,48 @@ class SupplierController extends Controller
             $this->redirect('/admin/supplier');
         }
 
-        // Hapus atau nonaktif
-        $used = $this->supplierModel->isUsedByRestock($id);
-        $deleted = $this->supplierModel->deleteOrDeactivate($id);
-
-        if (!$deleted) {
-            Session::setFlash('error', 'Supplier gagal diproses.');
+        // Cek relasi
+        if ($this->supplierModel->isUsedByRestock($id)) {
+            Session::setFlash('error', 'Supplier memiliki histori restock. Gunakan toggle aktif/nonaktif.');
             $this->redirect('/admin/supplier');
         }
 
-        if ($used) {
-            Session::setFlash('success', 'Supplier sudah pernah dipakai restock, jadi dinonaktifkan.');
-        } else {
-            Session::setFlash('success', 'Supplier berhasil dihapus.');
+        // Hapus permanen
+        $deleted = $this->supplierModel->deleteOrDeactivate($id);
+
+        if (!$deleted) {
+            Session::setFlash('error', 'Supplier gagal dihapus.');
+            $this->redirect('/admin/supplier');
         }
 
+        Session::setFlash('success', 'Supplier berhasil dihapus permanen.');
+        $this->redirect('/admin/supplier');
+    }
+
+    public function toggleStatus($id): void
+    {
+        $this->requireRole('admin');
+
+        $id = (int) $id;
+        $supplier = $this->supplierModel->findById($id);
+
+        if (!$supplier) {
+            Session::setFlash('error', 'Supplier tidak ditemukan.');
+            $this->redirect('/admin/supplier');
+        }
+
+        $currentStatus = strtolower((string) ($supplier['status'] ?? 'aktif'));
+        $newStatus = $currentStatus === 'aktif' ? 'nonaktif' : 'aktif';
+
+        $updated = $this->supplierModel->updateStatus($id, $newStatus);
+
+        if (!$updated) {
+            Session::setFlash('error', 'Gagal mengubah status supplier.');
+            $this->redirect('/admin/supplier');
+        }
+
+        $label = $newStatus === 'aktif' ? 'diaktifkan' : 'dinonaktifkan';
+        Session::setFlash('success', 'Supplier berhasil ' . $label . '.');
         $this->redirect('/admin/supplier');
     }
 }

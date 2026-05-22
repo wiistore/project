@@ -58,7 +58,7 @@ class Dashboard extends Model
         return $this->countRows($sql);
     }
 
-    private function getTransaksiTerbaru(int $limit = 5): array
+    private function getTransaksiTerbaru(int $limit = 10): array
     {
         $limit = max(1, min($limit, 20));
 
