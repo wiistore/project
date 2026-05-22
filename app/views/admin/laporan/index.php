@@ -660,7 +660,69 @@ foreach (array_slice($barangTerlaris, 0, 6) as $row) {
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<?php
+// Transaksi batal data
+$transaksiBatal = $transaksiBatal ?? [];
+$batalPerHari = $batalPerHari ?? [];
+
+// Build lookup for batal count per day
+$batalPerHariMap = [];
+foreach ($batalPerHari as $row) {
+    $batalPerHariMap[$row['tanggal'] ?? ''] = (int) ($row['total_batal'] ?? 0);
+}
+?>
+
+<?php if (!empty($transaksiBatal)): ?>
+    <section class="laporan-grid" data-aos="fade-up" data-aos-delay="350">
+        <article class="laporan-panel" style="grid-column: 1 / -1;">
+            <div class="laporan-card-head">
+                <div>
+                    <span>Pembatalan</span>
+                    <h3><i class="ti ti-x" style="color:#ef4444;"></i> Riwayat Pembatalan (<?= app_e((string) count($transaksiBatal)) ?> transaksi)</h3>
+                </div>
+            </div>
+
+            <div class="laporan-table-wrap">
+                <table class="laporan-table">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Kode Transaksi</th>
+                            <th>Tanggal</th>
+                            <th>Kasir</th>
+                            <th>Total</th>
+                            <th>Alasan</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <?php foreach ($transaksiBatal as $idx => $batal): ?>
+                            <tr>
+                                <td><?= app_e((string) ($idx + 1)) ?></td>
+                                <td><strong><?= app_e($batal['kode_transaksi'] ?? '-') ?></strong></td>
+                                <td>
+                                    <span class="laporan-date">
+                                        <i class="ti ti-calendar"></i>
+                                        <?= app_e(laporan_date($batal['tanggal'] ?? '')) ?>
+                                    </span>
+                                </td>
+                                <td><?= app_e($batal['nama_kasir'] ?? '-') ?></td>
+                                <td>
+                                    <strong class="laporan-money" style="color:#ef4444;">
+                                        <?= app_e(laporan_money($batal['total_jual'] ?? 0)) ?>
+                                    </strong>
+                                </td>
+                                <td><?= app_e($batal['alasan_batal'] ?? '-') ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </article>
+    </section>
+<?php endif; ?>
+
+<script src="<?= app_e(app_asset_versioned('assets/vendor/chart.umd.min.js')) ?>"></script>
 <script src="<?= app_e(app_asset_versioned('assets/js/laporan.js')) ?>"></script>
 
 <?php require APP_PATH . '/views/layouts/footer.php'; ?>

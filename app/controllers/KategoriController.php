@@ -16,8 +16,14 @@ class KategoriController extends Controller
         // Cek akses
         $this->requireRole('admin');
 
+        // Pagination
+        $page = max(1, (int) ($_GET['page'] ?? 1));
+        $perPage = 10;
+        $total = $this->kategoriModel->countAll();
+        $totalPages = max(1, (int) ceil($total / $perPage));
+
         // Ambil data
-        $kategoris = $this->kategoriModel->getAll();
+        $kategoris = $this->kategoriModel->getPaginated($page, $perPage);
 
         // Tampilkan halaman
         $this->view('admin/kategori/index', [
@@ -25,6 +31,12 @@ class KategoriController extends Controller
             'activeMenu' => 'kategori',
             'user' => Session::user(),
             'kategoris' => $kategoris,
+            'pagination' => [
+                'current_page' => $page,
+                'per_page' => $perPage,
+                'total' => $total,
+                'total_pages' => $totalPages,
+            ],
             'flash' => [
                 'success' => Session::getFlash('success'),
                 'error' => Session::getFlash('error'),
@@ -182,11 +194,11 @@ class KategoriController extends Controller
         }
 
         if ($this->kategoriModel->isUsedByBarang($id)) {
-            Session::setFlash('error', 'Kategori masih dipakai barang, jadi tidak bisa dihapus.');
+            Session::setFlash('error', 'Kategori masih dipakai barang, tidak bisa dihapus. Nonaktifkan barang terkait terlebih dahulu.');
             $this->redirect('/admin/kategori');
         }
 
-        // Hapus data
+        // Hapus permanen
         $deleted = $this->kategoriModel->deleteOrDeactivate($id);
 
         if (!$deleted) {
@@ -195,6 +207,23 @@ class KategoriController extends Controller
         }
 
         Session::setFlash('success', 'Kategori berhasil dihapus.');
+        $this->redirect('/admin/kategori');
+    }
+
+    public function toggleStatus($id): void
+    {
+        $this->requireRole('admin');
+
+        $id = (int) $id;
+        $kategori = $this->kategoriModel->findById($id);
+
+        if (!$kategori) {
+            Session::setFlash('error', 'Kategori tidak ditemukan.');
+            $this->redirect('/admin/kategori');
+        }
+
+        // Kategori doesn't have a status column natively, so we just notify
+        Session::setFlash('error', 'Kategori tidak memiliki fitur toggle status. Hapus kategori jika tidak terpakai.');
         $this->redirect('/admin/kategori');
     }
 }

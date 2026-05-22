@@ -16,8 +16,14 @@ class UserController extends Controller
         // Cek akses
         $this->requireRole('admin');
 
+        // Pagination
+        $page = max(1, (int) ($_GET['page'] ?? 1));
+        $perPage = 10;
+        $total = $this->userModel->countAll();
+        $totalPages = max(1, (int) ceil($total / $perPage));
+
         // Ambil data
-        $users = $this->userModel->getAll();
+        $users = $this->userModel->getPaginated($page, $perPage);
 
         // Tampilkan halaman
         $this->view('admin/user/index', [
@@ -25,6 +31,12 @@ class UserController extends Controller
             'activeMenu' => 'user',
             'user' => Session::user(),
             'users' => $users,
+            'pagination' => [
+                'current_page' => $page,
+                'per_page' => $perPage,
+                'total' => $total,
+                'total_pages' => $totalPages,
+            ],
             'flash' => [
                 'success' => Session::getFlash('success'),
                 'error' => Session::getFlash('error'),
@@ -300,6 +312,12 @@ class UserController extends Controller
             $this->redirect('/admin/user');
         }
 
+        // Cek relasi transaksi
+        if ($this->userModel->hasTransactions($id)) {
+            Session::setFlash('error', 'Kasir memiliki histori transaksi. Gunakan toggle aktif/nonaktif.');
+            $this->redirect('/admin/user');
+        }
+
         // Nonaktifkan kasir
         $deleted = $this->userModel->deleteOrDeactivate($id);
 
@@ -309,6 +327,44 @@ class UserController extends Controller
         }
 
         Session::setFlash('success', 'Kasir berhasil dinonaktifkan.');
+        $this->redirect('/admin/user');
+    }
+
+    public function toggleStatus($id): void
+    {
+        $this->requireRole('admin');
+
+        $id = (int) $id;
+        $userData = $this->userModel->findById($id);
+
+        if (!$userData) {
+            Session::setFlash('error', 'User tidak ditemukan.');
+            $this->redirect('/admin/user');
+        }
+
+        if ($userData['role'] === 'admin' || (int) $userData['is_protected'] === 1) {
+            Session::setFlash('error', 'Admin utama tidak boleh diubah statusnya.');
+            $this->redirect('/admin/user');
+        }
+
+        $currentStatus = strtolower((string) ($userData['status'] ?? 'aktif'));
+        $newStatus = $currentStatus === 'aktif' ? 'nonaktif' : 'aktif';
+
+        // Update status directly
+        $sql = "UPDATE users SET status = :status WHERE id = :id AND role = 'kasir' LIMIT 1";
+        $updated = $this->userModel->updateKasir($id, [
+            'username' => $userData['username'],
+            'email' => $userData['email'],
+            'status' => $newStatus,
+        ]);
+
+        if (!$updated) {
+            Session::setFlash('error', 'Gagal mengubah status kasir.');
+            $this->redirect('/admin/user');
+        }
+
+        $label = $newStatus === 'aktif' ? 'diaktifkan' : 'dinonaktifkan';
+        Session::setFlash('success', 'Kasir berhasil ' . $label . '.');
         $this->redirect('/admin/user');
     }
 }

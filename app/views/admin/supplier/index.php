@@ -340,5 +340,12 @@ if (!function_exists('supplier_short')) {
 
 <script src="<?= app_e(app_asset_versioned('assets/js/supplier.js')) ?>"></script>
 
+<?php
+$pagination = $pagination ?? null;
+if ($pagination) {
+    require APP_PATH . '/views/components/pagination.php';
+}
+?>
+
 <?php require APP_PATH . '/views/layouts/footer.php'; ?>
 <?php require APP_PATH . '/views/layouts/scripts.php'; ?>

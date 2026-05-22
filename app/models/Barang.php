@@ -544,6 +544,36 @@ class Barang extends Model
         return $this->countRows($sql);
     }
 
+    public function getPaginated(int $page = 1, int $perPage = 10): array
+    {
+        $page = max(1, $page);
+        $perPage = max(1, min($perPage, 100));
+        $offset = ($page - 1) * $perPage;
+
+        $sql = "
+            SELECT 
+                b.id,
+                b.kode_barang,
+                b.barcode,
+                b.nama,
+                b.id_kategori,
+                k.nama AS nama_kategori,
+                b.satuan,
+                b.harga_jual,
+                b.stok,
+                b.stok_minimum,
+                b.status,
+                b.created_at,
+                b.updated_at
+            FROM {$this->table} b
+            INNER JOIN kategori k ON k.id = b.id_kategori
+            ORDER BY b.nama ASC
+            LIMIT {$perPage} OFFSET {$offset}
+        ";
+
+        return $this->fetchAll($sql);
+    }
+
     private function existsByField(string $field, string $value, ?int $exceptId = null): bool
     {
         // Field dibatasi biar aman

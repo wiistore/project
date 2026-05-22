@@ -29,8 +29,21 @@ class RiwayatController extends Controller
         // Ambil data
         if ($tanggalMulai !== '' || $tanggalSelesai !== '') {
             $transaksis = $this->transaksiModel->getByDateRange($tanggalMulai, $tanggalSelesai);
+            $pagination = null;
         } else {
-            $transaksis = $this->transaksiModel->getWithUser(300);
+            // Pagination
+            $page = max(1, (int) ($_GET['page'] ?? 1));
+            $perPage = 10;
+            $total = $this->transaksiModel->countAll();
+            $totalPages = max(1, (int) ceil($total / $perPage));
+
+            $transaksis = $this->transaksiModel->getPaginated($page, $perPage);
+            $pagination = [
+                'current_page' => $page,
+                'per_page' => $perPage,
+                'total' => $total,
+                'total_pages' => $totalPages,
+            ];
         }
 
         // Hitung ringkasan ringan
@@ -43,6 +56,7 @@ class RiwayatController extends Controller
             'user' => Session::user(),
             'transaksis' => $transaksis,
             'summary' => $summary,
+            'pagination' => $pagination,
             'tanggalMulai' => $tanggalMulai,
             'tanggalSelesai' => $tanggalSelesai,
             'flash' => [
@@ -230,6 +244,7 @@ class RiwayatController extends Controller
         // Parse cart baru dari form
         $cartJson = trim($_POST['cart_json'] ?? '');
         $nominalBayar = trim($_POST['nominal_bayar'] ?? '0');
+        $metodeBayarPost = trim($_POST['metode_bayar'] ?? '');
 
         $newItems = $this->parseEditCart($cartJson);
 
@@ -303,7 +318,12 @@ class RiwayatController extends Controller
             $totalBeli = $prepared['total_beli'];
             $totalLaba = $prepared['total_laba'];
 
+            // Determine metode bayar - use posted value if valid, otherwise keep old
             $metodeBayar = $transaksi['metode_bayar'] ?? 'cash';
+            if ($metodeBayarPost !== '' && $this->transaksiModel->isValidPaymentMethod($metodeBayarPost)) {
+                $metodeBayar = $metodeBayarPost;
+            }
+
             $nominalBayarValue = $metodeBayar === 'cash' ? (float) $nominalBayar : $totalJual;
             $kembalian = $metodeBayar === 'cash' ? max(0, $nominalBayarValue - $totalJual) : 0;
 
@@ -318,6 +338,9 @@ class RiwayatController extends Controller
                 'nominal_bayar' => $nominalBayarValue,
                 'kembalian' => $kembalian,
             ]);
+
+            // Update metode bayar
+            $this->transaksiModel->updateMetodeBayar($id, $metodeBayar);
 
             if (!$updated) {
                 throw new RuntimeException('Gagal memperbarui total transaksi.');

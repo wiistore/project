@@ -25,6 +25,8 @@ class LaporanController extends Controller
         $barangTerlaris = $this->laporanModel->barangTerlaris($filter['tanggal_mulai'], $filter['tanggal_selesai'], 10);
         $metodePembayaran = $this->laporanModel->metodePembayaran($filter['tanggal_mulai'], $filter['tanggal_selesai']);
         $stokMenipis = $this->laporanModel->stokMenipis();
+        $transaksiBatal = $this->laporanModel->getTransaksiBatal($filter['tanggal_mulai'], $filter['tanggal_selesai']);
+        $batalPerHari = $this->laporanModel->countBatalPerHari($filter['tanggal_mulai'], $filter['tanggal_selesai']);
 
         // Tampilkan halaman
         $this->view('admin/laporan/index', [
@@ -38,6 +40,8 @@ class LaporanController extends Controller
             'barangTerlaris' => $barangTerlaris,
             'metodePembayaran' => $metodePembayaran,
             'stokMenipis' => $stokMenipis,
+            'transaksiBatal' => $transaksiBatal,
+            'batalPerHari' => $batalPerHari,
             'flash' => [
                 'success' => Session::getFlash('success'),
                 'error' => Session::getFlash('error'),

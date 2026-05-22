@@ -244,6 +244,53 @@ class Laporan extends Model
         return $this->fetchAll($sql);
     }
 
+    public function getTransaksiBatal(?string $start = null, ?string $end = null): array
+    {
+        // Transaksi yang dibatalkan
+        $sql = "
+            SELECT
+                t.id,
+                t.kode_transaksi,
+                t.tanggal,
+                t.total_jual,
+                t.alasan_batal,
+                u.username AS nama_kasir
+            FROM transaksi t
+            INNER JOIN users u ON u.id = t.id_user
+            WHERE t.status = 'dibatalkan'
+        ";
+
+        $params = $this->dateParams($start, $end, $sql);
+
+        $sql .= "
+            ORDER BY t.tanggal DESC
+            LIMIT 50
+        ";
+
+        return $this->fetchAll($sql, $params);
+    }
+
+    public function countBatalPerHari(?string $start = null, ?string $end = null): array
+    {
+        // Count pembatalan per hari
+        $sql = "
+            SELECT
+                DATE(t.tanggal) AS tanggal,
+                COUNT(t.id) AS total_batal
+            FROM transaksi t
+            WHERE t.status = 'dibatalkan'
+        ";
+
+        $params = $this->dateParams($start, $end, $sql);
+
+        $sql .= "
+            GROUP BY DATE(t.tanggal)
+            ORDER BY tanggal ASC
+        ";
+
+        return $this->fetchAll($sql, $params);
+    }
+
     private function dateParams(?string $start, ?string $end, string &$sql, string $column = 't.tanggal'): array
     {
         // Filter tanggal

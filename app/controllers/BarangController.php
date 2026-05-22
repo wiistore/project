@@ -18,8 +18,14 @@ class BarangController extends Controller
         // Cek akses
         $this->requireRole('admin');
 
+        // Pagination
+        $page = max(1, (int) ($_GET['page'] ?? 1));
+        $perPage = 10;
+        $total = $this->barangModel->countAll();
+        $totalPages = max(1, (int) ceil($total / $perPage));
+
         // Ambil data
-        $barangs = $this->barangModel->getAll();
+        $barangs = $this->barangModel->getPaginated($page, $perPage);
         $summary = $this->barangModel->summary();
 
         // Tampilkan halaman
@@ -30,6 +36,12 @@ class BarangController extends Controller
             'barangs' => $barangs,
             'barang' => $barangs,
             'summary' => $summary,
+            'pagination' => [
+                'current_page' => $page,
+                'per_page' => $perPage,
+                'total' => $total,
+                'total_pages' => $totalPages,
+            ],
             'flash' => [
                 'success' => Session::getFlash('success'),
                 'error' => Session::getFlash('error'),
@@ -214,21 +226,51 @@ class BarangController extends Controller
             $this->redirect('/admin/barang');
         }
 
-        // Hapus atau nonaktifkan
+        // Cek relasi - jika punya history, tolak hapus permanen
         $hasHistory = $this->barangModel->hasHistory($id);
-        $deleted = $this->barangModel->deleteOrDeactivate($id);
 
-        if (!$deleted) {
-            Session::setFlash('error', 'Barang gagal diproses.');
+        if ($hasHistory) {
+            Session::setFlash('error', 'Barang memiliki histori transaksi/restock. Gunakan toggle aktif/nonaktif.');
             $this->redirect('/admin/barang');
         }
 
-        if ($hasHistory) {
-            Session::setFlash('success', 'Barang sudah punya histori, jadi dinonaktifkan.');
-        } else {
-            Session::setFlash('success', 'Barang berhasil dihapus.');
+        // Hapus permanen (tidak punya relasi)
+        $sql = "DELETE FROM barang WHERE id = :id LIMIT 1";
+        $deleted = $this->barangModel->deleteOrDeactivate($id);
+
+        if (!$deleted) {
+            Session::setFlash('error', 'Barang gagal dihapus.');
+            $this->redirect('/admin/barang');
         }
 
+        Session::setFlash('success', 'Barang berhasil dihapus permanen.');
+        $this->redirect('/admin/barang');
+    }
+
+    public function toggleStatus($id): void
+    {
+        $this->requireRole('admin');
+
+        $id = (int) $id;
+        $barang = $this->barangModel->findById($id);
+
+        if (!$barang) {
+            Session::setFlash('error', 'Barang tidak ditemukan.');
+            $this->redirect('/admin/barang');
+        }
+
+        $currentStatus = strtolower((string) ($barang['status'] ?? 'aktif'));
+        $newStatus = $currentStatus === 'aktif' ? 'nonaktif' : 'aktif';
+
+        $updated = $this->barangModel->updateStatus($id, $newStatus);
+
+        if (!$updated) {
+            Session::setFlash('error', 'Gagal mengubah status barang.');
+            $this->redirect('/admin/barang');
+        }
+
+        $label = $newStatus === 'aktif' ? 'diaktifkan' : 'dinonaktifkan';
+        Session::setFlash('success', 'Barang berhasil ' . $label . '.');
         $this->redirect('/admin/barang');
     }
 

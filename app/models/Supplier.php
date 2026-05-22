@@ -235,6 +235,43 @@ class Supplier extends Model
         return $this->countRows($sql);
     }
 
+    public function getPaginated(int $page = 1, int $perPage = 10): array
+    {
+        $page = max(1, $page);
+        $perPage = max(1, min($perPage, 100));
+        $offset = ($page - 1) * $perPage;
+
+        $sql = "
+            SELECT 
+                s.id,
+                s.nama,
+                s.kontak_person,
+                s.no_hp,
+                s.alamat,
+                s.keterangan,
+                s.status,
+                s.created_at,
+                s.updated_at,
+                COUNT(r.id) AS total_restock
+            FROM {$this->table} s
+            LEFT JOIN restock r ON r.id_supplier = s.id
+            GROUP BY 
+                s.id,
+                s.nama,
+                s.kontak_person,
+                s.no_hp,
+                s.alamat,
+                s.keterangan,
+                s.status,
+                s.created_at,
+                s.updated_at
+            ORDER BY s.nama ASC
+            LIMIT {$perPage} OFFSET {$offset}
+        ";
+
+        return $this->fetchAll($sql);
+    }
+
     public function countActive(): int
     {
         $sql = "
