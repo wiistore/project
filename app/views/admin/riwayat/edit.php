@@ -133,7 +133,7 @@ if (!function_exists('edit_money')) {
 
                             <div class="riwayat-edit-summary-row is-info">
                                 <label for="editMetodeBayar">Metode Bayar</label>
-                                <select id="editMetodeBayar" name="metode_bayar" class="riwayat-edit-nominal-input" style="width:140px;">
+                                <select id="editMetodeBayar" name="metode_bayar" class="riwayat-edit-nominal-input" style="width:140px; text-align:center;">
                                     <option value="cash" <?= $metodeBayar === 'cash' ? 'selected' : '' ?>>Cash</option>
                                     <option value="qris" <?= $metodeBayar === 'qris' ? 'selected' : '' ?>>QRIS</option>
                                     <option value="transfer" <?= $metodeBayar === 'transfer' ? 'selected' : '' ?>>Transfer</option>
