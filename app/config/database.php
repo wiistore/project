@@ -5,10 +5,10 @@ declare(strict_types=1);
 // Config database
 return [
     'driver' => 'mysql',
-    'host' => 'koperasi-sekolah.mif.myhost.id',
+    'host' => 'localhost',
     'port' => '3306',
-    'database' => 'mifmyho2_D2',
-    'username' => 'mifmyho2_D2',
-    'password' => '@MIF2025',
+    'database' => 'kopsis_pos',
+    'username' => 'root',
+    'password' => '',
     'charset' => 'utf8mb4',
 ];
