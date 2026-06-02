@@ -162,18 +162,7 @@ CREATE TABLE `detail_transaksi` (
   `laba_item` decimal(14,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data untuk tabel `detail_transaksi`
---
 
-INSERT INTO `detail_transaksi` (`id`, `id_transaksi`, `id_barang`, `qty`, `harga_jual`, `harga_beli`, `subtotal_jual`, `subtotal_beli`, `laba_item`) VALUES
-(23, 13, 55, 2, 4000.00, 0.00, 8000.00, 0.00, 8000.00),
-(24, 14, 55, 2, 4000.00, 0.00, 8000.00, 0.00, 8000.00),
-(25, 15, 37, 2, 2000.00, 0.00, 4000.00, 0.00, 4000.00),
-(26, 16, 32, 3, 2000.00, 0.00, 6000.00, 0.00, 6000.00),
-(27, 16, 77, 2, 2000.00, 0.00, 4000.00, 0.00, 4000.00),
-(28, 17, 54, 3, 4000.00, 0.00, 12000.00, 0.00, 12000.00),
-(29, 18, 71, 6, 1500.00, 1000.00, 9000.00, 6000.00, 3000.00);
 
 -- --------------------------------------------------------
 
