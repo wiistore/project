@@ -484,7 +484,6 @@ if (!function_exists('label_app_asset')) {
                         lineColor: '#0f172a'
                     });
                 } catch (e) {
-                    // Kalau format gagal (misal value invalid), tampilin teks fallback
                     el.outerHTML = '<span style="font-family:monospace;font-size:8pt;">' + value + '</span>';
                 }
             });
