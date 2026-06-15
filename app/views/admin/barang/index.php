@@ -7,7 +7,13 @@ $useBarcode = true;
 
 $barangs = $barangs ?? ($barang ?? []);
 $summary = $summary ?? [];
-$flash = $flash ?? [];
+$filters = $filters ?? [];
+
+$filterSearch = (string) ($filters['search'] ?? '');
+$filterStatus = (string) ($filters['status'] ?? '');
+$filterStock = (string) ($filters['stock'] ?? '');
+
+$hasActiveFilter = $filterSearch !== '' || $filterStatus !== '' || $filterStock !== '';
 
 $success = $flash['success'] ?? null;
 $error = $flash['error'] ?? null;
@@ -155,48 +161,82 @@ if (!function_exists('barang_stock_meta')) {
             </div>
 
             <div class="barang-tools">
-                <label class="barang-search">
-                    <i class="ti ti-search"></i>
-                    <input
-                        type="search"
-                        placeholder="Cari kode, barcode, nama, kategori..."
-                        data-barang-search
-                    >
-                </label>
+                <form
+    class="barang-tools"
+    method="GET"
+    action="<?= app_e(app_url('/admin/barang')) ?>"
+    data-barang-filter-form
+>
+    <label class="barang-search">
+        <i class="ti ti-search"></i>
+        <input
+            type="search"
+            name="search"
+            value="<?= app_e($filterSearch) ?>"
+            placeholder="Cari kode, barcode, nama, kategori..."
+            data-barang-search
+        >
+    </label>
 
-                <select class="barang-filter" data-barang-status-filter aria-label="Filter status barang">
-                    <option value="">Semua Status</option>
-                    <option value="aktif">Aktif</option>
-                    <option value="nonaktif">Nonaktif</option>
-                </select>
+    <select
+        class="barang-filter"
+        name="status"
+        data-barang-status-filter
+        aria-label="Filter status barang"
+    >
+        <option value="" <?= $filterStatus === '' ? 'selected' : '' ?>>Semua Status</option>
+        <option value="aktif" <?= $filterStatus === 'aktif' ? 'selected' : '' ?>>Aktif</option>
+        <option value="nonaktif" <?= $filterStatus === 'nonaktif' ? 'selected' : '' ?>>Nonaktif</option>
+    </select>
 
-                <select class="barang-filter" data-barang-stock-filter aria-label="Filter stok barang">
-                    <option value="">Semua Stok</option>
-                    <option value="aman">Aman</option>
-                    <option value="menipis">Menipis</option>
-                    <option value="habis">Habis</option>
-                </select>
+    <select
+        class="barang-filter"
+        name="stock"
+        data-barang-stock-filter
+        aria-label="Filter stok barang"
+    >
+        <option value="" <?= $filterStock === '' ? 'selected' : '' ?>>Semua Stok</option>
+        <option value="aman" <?= $filterStock === 'aman' ? 'selected' : '' ?>>Aman</option>
+        <option value="menipis" <?= $filterStock === 'menipis' ? 'selected' : '' ?>>Menipis</option>
+        <option value="habis" <?= $filterStock === 'habis' ? 'selected' : '' ?>>Habis</option>
+    </select>
 
-                <button type="button" class="barang-btn barang-btn-ghost" data-barang-reset>
-                    <i class="ti ti-refresh"></i>
-                    Reset
-                </button>
+    <a href="<?= app_e(app_url('/admin/barang')) ?>" class="barang-btn barang-btn-ghost" data-barang-reset>
+        <i class="ti ti-refresh"></i>
+        Reset
+    </a>
+</form>
             </div>
         </div>
 
         <?php if (empty($barangs)): ?>
             <div class="barang-empty">
-                <span>
-                    <i class="ti ti-package-off"></i>
-                </span>
-                <h4>Belum ada data barang</h4>
-                <p>Tambahkan barang pertama supaya koperasi ini tidak cuma jadi halaman kosong yang terlihat mahal.</p>
+    <span>
+        <i class="<?= $hasActiveFilter ? 'ti ti-search-off' : 'ti ti-package-off' ?>"></i>
+    </span>
 
-                <a href="<?= app_e(app_url('/admin/barang/create')) ?>" class="barang-btn barang-btn-primary">
-                    <i class="ti ti-plus"></i>
-                    Tambah Barang
-                </a>
-            </div>
+    <h4><?= $hasActiveFilter ? 'Data barang tidak ketemu' : 'Belum ada data barang' ?></h4>
+
+    <p>
+        <?php if ($hasActiveFilter): ?>
+            Filter atau keyword terlalu sempit. Reset filter kalau mau lihat semua data lagi.
+        <?php else: ?>
+            Tambahkan barang pertama supaya koperasi ini tidak cuma jadi halaman kosong yang terlihat mahal.
+        <?php endif; ?>
+    </p>
+
+    <?php if ($hasActiveFilter): ?>
+        <a href="<?= app_e(app_url('/admin/barang')) ?>" class="barang-btn barang-btn-primary">
+            <i class="ti ti-refresh"></i>
+            Reset Filter
+        </a>
+    <?php else: ?>
+        <a href="<?= app_e(app_url('/admin/barang/create')) ?>" class="barang-btn barang-btn-primary">
+            <i class="ti ti-plus"></i>
+            Tambah Barang
+        </a>
+    <?php endif; ?>
+</div>
         <?php else: ?>
             <form
                 action="<?= app_e(app_url('/admin/barang/label-bulk')) ?>"
@@ -249,25 +289,27 @@ if (!function_exists('barang_stock_meta')) {
 
                         <tbody data-barang-table-body>
                             <?php foreach ($barangs as $index => $item): ?>
-                                <?php
-                                $status = strtolower((string) ($item['status'] ?? 'nonaktif'));
-                                $stok = (int) ($item['stok'] ?? 0);
-                                $stokMinimum = (int) ($item['stok_minimum'] ?? 0);
-                                $stockMeta = barang_stock_meta($stok, $stokMinimum);
-                                $itemId = (string) ($item['id'] ?? '');
-                                $itemBarcode = (string) ($item['barcode'] ?? '');
-                                $hasBarcode = trim($itemBarcode) !== '';
+    <?php
+    $rowNumber = (((int) ($pagination['current_page'] ?? 1) - 1) * (int) ($pagination['per_page'] ?? 10)) + $index + 1;
 
-                                $searchText = implode(' ', [
-                                    $item['kode_barang'] ?? '',
-                                    $item['barcode'] ?? '',
-                                    $item['nama'] ?? '',
-                                    $item['nama_kategori'] ?? '',
-                                    $item['satuan'] ?? '',
-                                    $status,
-                                    $stockMeta['label'],
-                                ]);
-                                ?>
+    $status = strtolower((string) ($item['status'] ?? 'nonaktif'));
+    $stok = (int) ($item['stok'] ?? 0);
+    $stokMinimum = (int) ($item['stok_minimum'] ?? 0);
+    $stockMeta = barang_stock_meta($stok, $stokMinimum);
+    $itemId = (string) ($item['id'] ?? '');
+    $itemBarcode = (string) ($item['barcode'] ?? '');
+    $hasBarcode = trim($itemBarcode) !== '';
+
+    $searchText = implode(' ', [
+        $item['kode_barang'] ?? '',
+        $item['barcode'] ?? '',
+        $item['nama'] ?? '',
+        $item['nama_kategori'] ?? '',
+        $item['satuan'] ?? '',
+        $status,
+        $stockMeta['label'],
+    ]);
+    ?>
 
                                 <tr
                                     data-barang-row
@@ -289,7 +331,7 @@ if (!function_exists('barang_stock_meta')) {
                                     </td>
 
                                     <td>
-                                        <span class="barang-number"><?= app_e((string) ($index + 1)) ?></span>
+                                        <span class="barang-number"><?= app_e((string) $rowNumber) ?></span>
                                     </td>
 
                                     <td>

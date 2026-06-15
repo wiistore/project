@@ -35,6 +35,9 @@ $tanggalSelesai = $tanggalSelesai ?? ($_GET['tanggal_selesai'] ?? '');
 
 $success = $flash['success'] ?? null;
 $error = $flash['error'] ?? null;
+$penjualanHarianRingkasan = array_slice($penjualanHarian, -10);
+$barangTerlarisRingkasan = array_slice($barangTerlaris, 0, 10);
+$stokMenipisRingkasan = array_slice($stokMenipisData, 0, 10);
 
 if (!function_exists('laporan_money')) {
     function laporan_money(mixed $value): string
@@ -168,7 +171,7 @@ $chartPenjualan = [
     'laba' => [],
 ];
 
-foreach ($penjualanHarian as $row) {
+foreach ($penjualanHarianRingkasan as $row) {
     $chartPenjualan['labels'][] = laporan_date($row['tanggal'] ?? '');
     $chartPenjualan['penjualan'][] = (float) ($row['total_penjualan'] ?? 0);
     $chartPenjualan['laba'][] = (float) ($row['total_laba'] ?? 0);
@@ -189,7 +192,7 @@ $chartBarang = [
     'values' => [],
 ];
 
-foreach (array_slice($barangTerlaris, 0, 6) as $row) {
+foreach (array_slice($barangTerlarisRingkasan, 0, 6) as $row) {
     $chartBarang['labels'][] = (string) ($row['nama_barang'] ?? '-');
     $chartBarang['values'][] = (int) ($row['total_qty'] ?? 0);
 }
@@ -423,7 +426,7 @@ foreach (array_slice($barangTerlaris, 0, 6) as $row) {
                         </thead>
 
                         <tbody>
-                            <?php foreach ($penjualanHarian as $row): ?>
+                            <?php foreach ($penjualanHarianRingkasan as $row): ?>
                                 <tr>
                                     <td>
                                         <span class="laporan-date">
@@ -497,7 +500,7 @@ foreach (array_slice($barangTerlaris, 0, 6) as $row) {
                         </thead>
 
                         <tbody>
-                            <?php foreach (array_slice($barangTerlaris, 0, 10) as $index => $row): ?>
+                            <?php foreach ($barangTerlarisRingkasan as $index => $row): ?>
                                 <tr>
                                     <td>
                                         <div class="laporan-product">
@@ -586,10 +589,10 @@ foreach (array_slice($barangTerlaris, 0, 6) as $row) {
                     <h3>Stok Menipis</h3>
                 </div>
 
-                <a href="<?= app_e(app_url('/admin/barang')) ?>" class="laporan-mini-link">
-                    <i class="ti ti-package"></i>
-                    Barang
-                </a>
+<a href="<?= app_e(app_url('/admin/barang?stock=menipis')) ?>" class="laporan-mini-link">
+    <i class="ti ti-package"></i>
+    Lihat Semua
+</a>
             </div>
 
             <?php if (empty($stokMenipisData)): ?>
@@ -613,7 +616,7 @@ foreach (array_slice($barangTerlaris, 0, 6) as $row) {
                         </thead>
 
                         <tbody>
-                            <?php foreach ($stokMenipisData as $row): ?>
+                            <?php foreach ($stokMenipisRingkasan as $row): ?>
                                 <tr>
                                     <td>
                                         <div class="laporan-product">

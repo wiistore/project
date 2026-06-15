@@ -221,28 +221,30 @@ class Laporan extends Model
         return $this->fetchAll($sql, $params);
     }
 
-    public function stokMenipis(): array
-    {
-        // Barang stok menipis
-        $sql = "
-            SELECT
-                b.id,
-                b.kode_barang,
-                b.nama AS nama_barang,
-                b.stok,
-                b.stok_minimum,
-                b.satuan,
-                k.nama AS nama_kategori
-            FROM barang b
-            INNER JOIN kategori k ON k.id = b.id_kategori
-            WHERE b.status = 'aktif'
-              AND b.stok <= b.stok_minimum
-            ORDER BY b.stok ASC, b.nama ASC
-            LIMIT 100
-        ";
+public function stokMenipis(int $limit = 10): array
+{
+    // Barang stok menipis
+    $limit = max(1, min($limit, 100));
 
-        return $this->fetchAll($sql);
-    }
+    $sql = "
+        SELECT
+            b.id,
+            b.kode_barang,
+            b.nama AS nama_barang,
+            b.stok,
+            b.stok_minimum,
+            b.satuan,
+            k.nama AS nama_kategori
+        FROM barang b
+        INNER JOIN kategori k ON k.id = b.id_kategori
+        WHERE b.status = 'aktif'
+          AND b.stok <= b.stok_minimum
+        ORDER BY b.stok ASC, b.nama ASC
+        LIMIT {$limit}
+    ";
+
+    return $this->fetchAll($sql);
+}
 
     public function getTransaksiBatal(?string $start = null, ?string $end = null): array
     {

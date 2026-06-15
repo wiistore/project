@@ -280,18 +280,32 @@
 }
 
 .struk-receipt-logo {
-    width: 36px;
-    height: 36px;
+    width: 70px;
+    height: 70px;
     display: grid;
     place-items: center;
     margin: 0 auto 7px;
+    overflow: hidden;
     border-radius: 11px;
     color: #ffffff;
-    background: linear-gradient(145deg, #128048, #0b633a);
+}
+
+.struk-receipt-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    padding: 4px;
 }
 
 .struk-receipt-logo i {
     font-size: 20px;
+}
+
+.struk-logo-fallback {
+    width: 100%;
+    height: 100%;
+    place-items: center;
 }
 
 .struk-receipt-brand h3 {

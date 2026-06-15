@@ -69,7 +69,6 @@ $router->post('/logout', 'AuthController@logout');
 | Dashboard
 |--------------------------------------------------------------------------
 */
-
 $router->get('/admin/dashboard', 'AdminController@dashboard');
 $router->get('/kasir/dashboard', 'KasirController@dashboard');
 

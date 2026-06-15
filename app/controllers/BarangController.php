@@ -13,41 +13,65 @@ class BarangController extends Controller
         $this->kategoriModel = $this->model('Kategori');
     }
 
-    public function index(): void
-    {
-        // Cek akses
-        $this->requireRole('admin');
+public function index(): void
+{
+    // Cek akses
+    $this->requireRole('admin');
 
-        // Pagination
-        $page = max(1, (int) ($_GET['page'] ?? 1));
-        $perPage = 10;
-        $total = $this->barangModel->countAll();
-        $totalPages = max(1, (int) ceil($total / $perPage));
+    // Ambil filter dari URL
+    $filters = [
+        'search' => trim((string) ($_GET['search'] ?? '')),
+        'status' => strtolower(trim((string) ($_GET['status'] ?? ''))),
+        'stock' => strtolower(trim((string) ($_GET['stock'] ?? ''))),
+    ];
 
-        // Ambil data
-        $barangs = $this->barangModel->getPaginated($page, $perPage);
-        $summary = $this->barangModel->summary();
-
-        // Tampilkan halaman
-        $this->view('admin/barang/index', [
-            'title' => 'Data Barang',
-            'activeMenu' => 'barang',
-            'user' => Session::user(),
-            'barangs' => $barangs,
-            'barang' => $barangs,
-            'summary' => $summary,
-            'pagination' => [
-                'current_page' => $page,
-                'per_page' => $perPage,
-                'total' => $total,
-                'total_pages' => $totalPages,
-            ],
-            'flash' => [
-                'success' => Session::getFlash('success'),
-                'error' => Session::getFlash('error'),
-            ],
-        ]);
+    // Whitelist biar input aneh-aneh gak ikut masuk query
+    if (!in_array($filters['status'], ['', 'aktif', 'nonaktif'], true)) {
+        $filters['status'] = '';
     }
+
+    if (!in_array($filters['stock'], ['', 'aman', 'menipis', 'habis'], true)) {
+        $filters['stock'] = '';
+    }
+
+    // Pagination
+    $page = max(1, (int) ($_GET['page'] ?? 1));
+    $perPage = 10;
+
+    // Hitung total berdasarkan filter, bukan semua data
+    $total = $this->barangModel->countFiltered($filters);
+    $totalPages = max(1, (int) ceil($total / $perPage));
+
+    // Kalau page kegedean setelah filter, paksa balik ke page terakhir yang valid
+    $page = min($page, $totalPages);
+
+    // Ambil data berdasarkan filter + pagination
+    $barangs = $this->barangModel->getPaginatedFiltered($filters, $page, $perPage);
+    $summary = $this->barangModel->summary();
+
+    // Tampilkan halaman
+    $this->view('admin/barang/index', [
+        'title' => 'Data Barang',
+        'activeMenu' => 'barang',
+        'user' => Session::user(),
+        'barangs' => $barangs,
+        'barang' => $barangs,
+        'summary' => $summary,
+        'filters' => $filters,
+        'pagination' => [
+            'current_page' => $page,
+            'per_page' => $perPage,
+            'total' => $total,
+            'total_pages' => $totalPages,
+            'base_url' => '/admin/barang',
+            'query' => $filters,
+        ],
+        'flash' => [
+            'success' => Session::getFlash('success'),
+            'error' => Session::getFlash('error'),
+        ],
+    ]);
+}
 
     public function create(): void
     {

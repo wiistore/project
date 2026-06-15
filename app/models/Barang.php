@@ -601,7 +601,99 @@ class Barang extends Model
         $sql .= " LIMIT 1";
 
         return $this->fetch($sql, $params) !== false;
+
+        
     }
+    public function countFiltered(array $filters = []): int
+{
+    $params = [];
+    $where = $this->buildFilteredWhere($filters, $params);
+
+    $sql = "
+        SELECT COUNT(b.id) AS total
+        FROM {$this->table} b
+        INNER JOIN kategori k ON k.id = b.id_kategori
+        {$where}
+    ";
+
+    $row = $this->fetch($sql, $params);
+
+    return (int) ($row['total'] ?? 0);
+}
+
+public function getPaginatedFiltered(array $filters = [], int $page = 1, int $perPage = 10): array
+{
+    $page = max(1, $page);
+    $perPage = max(1, min($perPage, 100));
+    $offset = ($page - 1) * $perPage;
+
+    $params = [];
+    $where = $this->buildFilteredWhere($filters, $params);
+
+    $sql = "
+        SELECT 
+            b.id,
+            b.kode_barang,
+            b.barcode,
+            b.nama,
+            b.id_kategori,
+            k.nama AS nama_kategori,
+            b.satuan,
+            b.harga_jual,
+            b.stok,
+            b.stok_minimum,
+            b.status,
+            b.created_at,
+            b.updated_at
+        FROM {$this->table} b
+        INNER JOIN kategori k ON k.id = b.id_kategori
+        {$where}
+        ORDER BY b.nama ASC
+        LIMIT {$perPage} OFFSET {$offset}
+    ";
+
+    return $this->fetchAll($sql, $params);
+}
+
+private function buildFilteredWhere(array $filters, array &$params): string
+{
+    $where = [];
+
+    $search = trim((string) ($filters['search'] ?? ''));
+    $status = strtolower(trim((string) ($filters['status'] ?? '')));
+    $stock = strtolower(trim((string) ($filters['stock'] ?? '')));
+
+    if ($search !== '') {
+        $where[] = "(
+            b.kode_barang LIKE :search
+            OR b.barcode LIKE :search
+            OR b.nama LIKE :search
+            OR k.nama LIKE :search
+            OR b.satuan LIKE :search
+        )";
+
+        $params['search'] = '%' . $search . '%';
+    }
+
+    if (in_array($status, ['aktif', 'nonaktif'], true)) {
+        $where[] = "b.status = :status";
+        $params['status'] = $status;
+    }
+
+    if ($stock === 'aman') {
+        $where[] = "b.stok > b.stok_minimum";
+    } elseif ($stock === 'menipis') {
+        $where[] = "b.stok > 0 AND b.stok <= b.stok_minimum";
+    } elseif ($stock === 'habis') {
+        $where[] = "b.stok <= 0";
+    }
+
+    if (empty($where)) {
+        return '';
+    }
+
+    return 'WHERE ' . implode(' AND ', $where);
+}
 
     private function nullable($value)
     {

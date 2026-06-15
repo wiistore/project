@@ -107,7 +107,7 @@ $userName = dash_user_name($user);
     <section class="dashboard-hero" data-aos="fade-down" data-aos-duration="700">
         <div class="dashboard-hero-content">
             <span class="dashboard-eyebrow">
-                <i class="ti ti-sparkles"></i>
+                
                 Ringkasan Hari Ini
             </span>
 

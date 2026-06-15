@@ -93,9 +93,6 @@ $menus = $isKasir
                     alt="Logo"
                     onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';"
                 >
-                <span class="app-brand-fallback">
-                    <i class="ti ti-school"></i>
-                </span>
             </span>
 
             <span class="app-brand-text">

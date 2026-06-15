@@ -275,13 +275,13 @@ if (!function_exists('restock_option_price')) {
                             <div class="restock-input-wrap">
                                 <i class="ti ti-alert-circle"></i>
                                 <select id="alasan_preset" data-alasan-preset>
-                                    <option value="">Pilih alasan atau tulis sendiri</option>
+                                    <option value="">Pilih alasan</option>
                                     <option value="Barang rusak" <?= $alasan === 'Barang rusak' ? 'selected' : '' ?>>Barang rusak</option>
                                     <option value="Barang expired" <?= $alasan === 'Barang expired' ? 'selected' : '' ?>>Barang expired</option>
                                     <option value="Barang hilang" <?= $alasan === 'Barang hilang' ? 'selected' : '' ?>>Barang hilang</option>
                                     <option value="Koreksi stok" <?= $alasan === 'Koreksi stok' ? 'selected' : '' ?>>Koreksi stok</option>
                                     <option value="Salah input" <?= $alasan === 'Salah input' ? 'selected' : '' ?>>Salah input</option>
-                                    <option value="custom">Tulis sendiri...</option>
+                                    <option value="custom">Lainnya...</option>
                                 </select>
                             </div>
 

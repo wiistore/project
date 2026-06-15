@@ -26,13 +26,21 @@ foreach ($items as $row) {
 
 <div class="struk-receipt-paper struk-print-area">
     <div class="struk-receipt-brand">
-        <div class="struk-receipt-logo">
+    <div class="struk-receipt-logo">
+        <img
+            src="<?= app_e(app_asset('assets/images/mts.png')) ?>"
+            alt="Logo MTSN 8 Banyuwangi"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';"
+        >
+
+        <span class="struk-logo-fallback" aria-hidden="true" style="display:none;">
             <i class="ti ti-school"></i>
-        </div>
+        </span>
+    </div>
 
         <h3>LAB KEWIRAUSAHAAN</h3>
         <strong>MTSN 8 BANYUWANGI</strong>
-        <p>Jl. Pendidikan • Banyuwangi</p>
+        <p>Jl. Samiran Dusun Krajan II.7, RT.003/RW.003, Jalen Parungan, Setail, Kec. Genteng, Kabupaten Banyuwangi, Jawa Timur 68465</p>
     </div>
 
     <div class="struk-divider"></div>
@@ -132,6 +140,6 @@ foreach ($items as $row) {
 
     <div class="struk-receipt-footer">
         <strong>Terima kasih</strong>
-        <p>Barang yang sudah dibeli tidak dapat dikembalikan tanpa persetujuan admin.</p>
+        <p>Telah Berbelanja Disini, Ditunggu Kedatangannya untuk belanja Lagi.</p>
     </div>
 </div>

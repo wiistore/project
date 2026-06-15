@@ -24,7 +24,7 @@ class LaporanController extends Controller
         $penjualanHarian = $this->laporanModel->penjualanHarian($filter['tanggal_mulai'], $filter['tanggal_selesai']);
         $barangTerlaris = $this->laporanModel->barangTerlaris($filter['tanggal_mulai'], $filter['tanggal_selesai'], 10);
         $metodePembayaran = $this->laporanModel->metodePembayaran($filter['tanggal_mulai'], $filter['tanggal_selesai']);
-        $stokMenipis = $this->laporanModel->stokMenipis();
+        $stokMenipis = $this->laporanModel->stokMenipis(10);
         $transaksiBatal = $this->laporanModel->getTransaksiBatal($filter['tanggal_mulai'], $filter['tanggal_selesai']);
         $batalPerHari = $this->laporanModel->countBatalPerHari($filter['tanggal_mulai'], $filter['tanggal_selesai']);
 
@@ -163,7 +163,7 @@ public function exportRingkasan(): void
     $penjualanHarian = $this->laporanModel->penjualanHarian($filter['tanggal_mulai'], $filter['tanggal_selesai']);
     $barangTerlaris = $this->laporanModel->barangTerlaris($filter['tanggal_mulai'], $filter['tanggal_selesai'], 100);
     $metodePembayaran = $this->laporanModel->metodePembayaran($filter['tanggal_mulai'], $filter['tanggal_selesai']);
-    $stokMenipis = $this->laporanModel->stokMenipis();
+    $stokMenipis = $this->laporanModel->stokMenipis(100);
 
     $this->downloadExcel('laporan-ringkasan', function () use ($summary, $penjualanHarian, $barangTerlaris, $metodePembayaran, $stokMenipis) {
         echo '<h2>Ringkasan Laporan</h2>';

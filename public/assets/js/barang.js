@@ -14,77 +14,66 @@
         return String(value || '').trim().toLowerCase();
     }
 
-    function initBarangFilter() {
-        const searchInput = document.querySelector('[data-barang-search]');
-        const statusFilter = document.querySelector('[data-barang-status-filter]');
-        const stockFilter = document.querySelector('[data-barang-stock-filter]');
-        const resetButton = document.querySelector('[data-barang-reset]');
-        const rows = Array.from(document.querySelectorAll('[data-barang-row]'));
-        const emptyState = document.querySelector('[data-barang-filter-empty]');
+function initBarangFilter() {
+    const form = document.querySelector('[data-barang-filter-form]');
+    const searchInput = document.querySelector('[data-barang-search]');
+    const statusFilter = document.querySelector('[data-barang-status-filter]');
+    const stockFilter = document.querySelector('[data-barang-stock-filter]');
+    const resetButton = document.querySelector('[data-barang-reset]');
 
-        if (!rows.length) {
+    if (!form) {
+        return;
+    }
+
+    let searchTimer = null;
+
+    function submitFilter() {
+        const pageInput = form.querySelector('input[name="page"]');
+
+        if (pageInput) {
+            pageInput.remove();
+        }
+
+        if (typeof form.requestSubmit === 'function') {
+            form.requestSubmit();
             return;
         }
 
-        function applyFilter() {
-            const keyword = normalize(searchInput ? searchInput.value : '');
-            const status = normalize(statusFilter ? statusFilter.value : '');
-            const stock = normalize(stockFilter ? stockFilter.value : '');
-
-            let visibleCount = 0;
-
-            rows.forEach(function (row) {
-                const rowSearch = normalize(row.dataset.search);
-                const rowStatus = normalize(row.dataset.status);
-                const rowStock = normalize(row.dataset.stock);
-
-                const matchKeyword = keyword === '' || rowSearch.includes(keyword);
-                const matchStatus = status === '' || rowStatus === status;
-                const matchStock = stock === '' || rowStock === stock;
-
-                const visible = matchKeyword && matchStatus && matchStock;
-
-                row.hidden = !visible;
-
-                if (visible) {
-                    visibleCount += 1;
-                }
-            });
-
-            if (emptyState) {
-                emptyState.hidden = visibleCount !== 0;
-            }
-        }
-
-        if (searchInput) {
-            searchInput.addEventListener('input', applyFilter);
-        }
-
-        if (statusFilter) {
-            statusFilter.addEventListener('change', applyFilter);
-        }
-
-        if (stockFilter) {
-            stockFilter.addEventListener('change', applyFilter);
-        }
-
-        if (resetButton) {
-            resetButton.addEventListener('click', function () {
-                if (searchInput) searchInput.value = '';
-                if (statusFilter) statusFilter.value = '';
-                if (stockFilter) stockFilter.value = '';
-
-                applyFilter();
-
-                if (searchInput) {
-                    searchInput.focus();
-                }
-            });
-        }
-
-        applyFilter();
+        form.submit();
     }
 
+    if (searchInput) {
+        searchInput.addEventListener('input', function () {
+            clearTimeout(searchTimer);
+
+            searchTimer = setTimeout(function () {
+                submitFilter();
+            }, 500);
+        });
+
+        searchInput.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                clearTimeout(searchTimer);
+                submitFilter();
+            }
+        });
+    }
+
+    if (statusFilter) {
+        statusFilter.addEventListener('change', submitFilter);
+    }
+
+    if (stockFilter) {
+        stockFilter.addEventListener('change', submitFilter);
+    }
+
+    if (resetButton && resetButton.tagName.toLowerCase() === 'button') {
+        resetButton.addEventListener('click', function () {
+            window.location.href = form.getAttribute('action') || window.location.pathname;
+        });
+    }
+}
     function formatRupiah(value) {
         const number = Number(value || 0);
 
