@@ -192,6 +192,85 @@
         update();
     }
 
+
+    function initBarangFilterBySupplier() {
+        const supplierSelect = document.querySelector('[data-supplier-select]');
+        const barangSelect = document.querySelector('[data-barang-select]');
+        const barangSearch = document.querySelector('[data-barang-search]');
+
+        if (!barangSelect) {
+            return;
+        }
+
+        const requireSupplier = barangSelect.dataset.requireSupplier === '1';
+        const placeholder = barangSelect.querySelector('option[value=""]');
+        const options = Array.from(barangSelect.options).filter(function (option) {
+            return option.value !== '';
+        });
+
+        function visibleByFilter(option, supplierId, keyword) {
+            const optionSupplierId = String(option.dataset.supplierId || '');
+            const text = normalize([
+                option.textContent,
+                option.dataset.name,
+                option.dataset.code,
+                option.dataset.supplierName
+            ].join(' '));
+
+            const supplierOk = requireSupplier
+                ? supplierId !== '' && optionSupplierId === supplierId
+                : supplierId === '' || optionSupplierId === supplierId;
+
+            const keywordOk = keyword === '' || text.includes(keyword);
+
+            return supplierOk && keywordOk;
+        }
+
+        function applyFilter() {
+            const supplierId = supplierSelect ? String(supplierSelect.value || '') : '';
+            const keyword = normalize(barangSearch ? barangSearch.value : '');
+            let visibleCount = 0;
+
+            options.forEach(function (option) {
+                const visible = visibleByFilter(option, supplierId, keyword);
+
+                option.hidden = !visible;
+                option.disabled = !visible;
+
+                if (visible) {
+                    visibleCount += 1;
+                }
+            });
+
+            if (placeholder) {
+                if (requireSupplier && supplierId === '') {
+                    placeholder.textContent = 'Pilih supplier dulu';
+                } else if (visibleCount === 0) {
+                    placeholder.textContent = 'Barang tidak ditemukan';
+                } else {
+                    placeholder.textContent = 'Pilih barang';
+                }
+            }
+
+            const selected = barangSelect.options[barangSelect.selectedIndex];
+
+            if (selected && selected.value && (selected.hidden || selected.disabled)) {
+                barangSelect.value = '';
+                barangSelect.dispatchEvent(new Event('change'));
+            }
+        }
+
+        if (supplierSelect) {
+            supplierSelect.addEventListener('change', applyFilter);
+        }
+
+        if (barangSearch) {
+            barangSearch.addEventListener('input', applyFilter);
+        }
+
+        applyFilter();
+    }
+
     function initSubmitState() {
         const form = document.querySelector('[data-restock-form]');
         const button = document.querySelector('.restock-submit-btn');
@@ -211,6 +290,7 @@
         initRestockCalculation();
         initBarangPreview();
         initSupplierPreview();
+        initBarangFilterBySupplier();
         initSubmitState();
     });
 })();

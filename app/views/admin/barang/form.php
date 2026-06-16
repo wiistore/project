@@ -9,6 +9,7 @@ $formAction = $formAction ?? '/admin/barang/store';
 $formMode = $formMode ?? 'create';
 $barang = $barang ?? null;
 $kategoris = $kategoris ?? ($kategori ?? []);
+$suppliers = $suppliers ?? [];
 $errors = $errors ?? [];
 $old = $old ?? [];
 
@@ -16,6 +17,7 @@ $kodeBarang = $old['kode_barang'] ?? ($barang['kode_barang'] ?? '');
 $barcode = $old['barcode'] ?? ($barang['barcode'] ?? '');
 $nama = $old['nama'] ?? ($barang['nama'] ?? '');
 $idKategori = $old['id_kategori'] ?? ($barang['id_kategori'] ?? '');
+$idSupplier = $old['id_supplier'] ?? ($barang['id_supplier'] ?? '');
 $satuan = $old['satuan'] ?? ($barang['satuan'] ?? 'pcs');
 $hargaJual = $old['harga_jual'] ?? ($barang['harga_jual'] ?? '');
 $stokMinimum = $old['stok_minimum'] ?? ($barang['stok_minimum'] ?? 5);
@@ -211,6 +213,37 @@ if (!function_exists('barang_field_error')) {
 
                         <?php if (isset($errors['id_kategori'])): ?>
                             <small class="barang-field-error"><?= app_e($errors['id_kategori']) ?></small>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="barang-field">
+                        <label for="id_supplier">
+                            Supplier
+                            <span>*</span>
+                        </label>
+
+                        <div class="barang-input-wrap">
+                            <i class="ti ti-truck-delivery"></i>
+                            <select
+                                id="id_supplier"
+                                name="id_supplier"
+                                class="<?= app_e(barang_field_error($errors, 'id_supplier')) ?>"
+                            >
+                                <option value="">Pilih supplier</option>
+
+                                <?php foreach ($suppliers as $supplier): ?>
+                                    <option
+                                        value="<?= app_e($supplier['id'] ?? '') ?>"
+                                        <?= (string) $idSupplier === (string) ($supplier['id'] ?? '') ? 'selected' : '' ?>
+                                    >
+                                        <?= app_e($supplier['nama'] ?? '-') ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <?php if (isset($errors['id_supplier'])): ?>
+                            <small class="barang-field-error"><?= app_e($errors['id_supplier']) ?></small>
                         <?php endif; ?>
                     </div>
 

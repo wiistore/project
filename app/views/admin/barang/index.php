@@ -169,13 +169,15 @@ if (!function_exists('barang_stock_meta')) {
 >
     <label class="barang-search">
         <i class="ti ti-search"></i>
-        <input
-            type="search"
-            name="search"
-            value="<?= app_e($filterSearch) ?>"
-            placeholder="Cari kode, barcode, nama, kategori..."
-            data-barang-search
-        >
+<input
+    type="search"
+    name="search"
+    value="<?= app_e($filters['search'] ?? '') ?>"
+    placeholder="Cari kode / nama / barcode barang"
+    autocomplete="off"
+    data-barang-search
+    data-keep-focus
+>
     </label>
 
     <select

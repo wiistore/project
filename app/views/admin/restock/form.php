@@ -150,6 +150,16 @@ if (!function_exists('restock_option_price')) {
                             <span>*</span>
                         </label>
 
+                        <div class="restock-input-wrap" style="margin-bottom: 8px;">
+                            <i class="ti ti-search"></i>
+                            <input
+                                type="search"
+                                placeholder="Cari kode / nama barang"
+                                autocomplete="off"
+                                data-barang-search
+                            >
+                        </div>
+
                         <div class="restock-input-wrap">
                             <i class="ti ti-package"></i>
                             <select
@@ -157,8 +167,9 @@ if (!function_exists('restock_option_price')) {
                                 name="id_barang"
                                 class="<?= app_e(restock_field_error($errors, 'id_barang')) ?>"
                                 data-barang-select
+                                data-require-supplier="<?= $isMasuk ? '1' : '0' ?>"
                             >
-                                <option value="">Pilih barang</option>
+                                <option value=""><?= $isMasuk ? 'Pilih supplier dulu' : 'Pilih barang' ?></option>
 
                                 <?php foreach ($barangs as $barang): ?>
                                     <option
@@ -168,6 +179,8 @@ if (!function_exists('restock_option_price')) {
                                         data-stock="<?= app_e((string) ($barang['stok'] ?? 0)) ?>"
                                         data-unit="<?= app_e($barang['satuan'] ?? '-') ?>"
                                         data-price="<?= app_e(restock_option_price($barang['harga_jual'] ?? 0)) ?>"
+                                        data-supplier-id="<?= app_e((string) ($barang['id_supplier'] ?? '')) ?>"
+                                        data-supplier-name="<?= app_e($barang['nama_supplier'] ?? '-') ?>"
                                         <?= (string) $idBarang === (string) ($barang['id'] ?? '') ? 'selected' : '' ?>
                                     >
                                         <?= app_e($barang['kode_barang'] ?? '-') ?> - <?= app_e($barang['nama'] ?? '-') ?>

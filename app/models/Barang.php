@@ -17,6 +17,8 @@ class Barang extends Model
                 b.nama,
                 b.id_kategori,
                 k.nama AS nama_kategori,
+                b.id_supplier,
+                s.nama AS nama_supplier,
                 b.satuan,
                 b.harga_jual,
                 b.stok,
@@ -26,6 +28,7 @@ class Barang extends Model
                 b.updated_at
             FROM {$this->table} b
             INNER JOIN kategori k ON k.id = b.id_kategori
+            LEFT JOIN supplier s ON s.id = b.id_supplier
             ORDER BY b.nama ASC
             LIMIT 200
         ";
@@ -44,12 +47,15 @@ class Barang extends Model
                 b.nama,
                 b.id_kategori,
                 k.nama AS nama_kategori,
+                b.id_supplier,
+                s.nama AS nama_supplier,
                 b.satuan,
                 b.harga_jual,
                 b.stok,
                 b.stok_minimum
             FROM {$this->table} b
             INNER JOIN kategori k ON k.id = b.id_kategori
+            LEFT JOIN supplier s ON s.id = b.id_supplier
             WHERE b.status = 'aktif'
             ORDER BY b.nama ASC
             LIMIT 200
@@ -69,6 +75,8 @@ class Barang extends Model
                 b.nama,
                 b.id_kategori,
                 k.nama AS nama_kategori,
+                b.id_supplier,
+                s.nama AS nama_supplier,
                 b.satuan,
                 b.harga_jual,
                 b.stok,
@@ -78,6 +86,7 @@ class Barang extends Model
                 b.updated_at
             FROM {$this->table} b
             INNER JOIN kategori k ON k.id = b.id_kategori
+            LEFT JOIN supplier s ON s.id = b.id_supplier
             WHERE b.id = :id
             LIMIT 1
         ";
@@ -103,6 +112,8 @@ class Barang extends Model
                 b.nama,
                 b.id_kategori,
                 k.nama AS nama_kategori,
+                b.id_supplier,
+                s.nama AS nama_supplier,
                 b.satuan,
                 b.harga_jual,
                 b.stok,
@@ -110,6 +121,7 @@ class Barang extends Model
                 b.status
             FROM {$this->table} b
             INNER JOIN kategori k ON k.id = b.id_kategori
+            LEFT JOIN supplier s ON s.id = b.id_supplier
             WHERE b.id = :id
               AND b.status = 'aktif'
             LIMIT 1
@@ -130,6 +142,7 @@ class Barang extends Model
                     barcode,
                     nama,
                     id_kategori,
+                    id_supplier,
                     satuan,
                     harga_jual,
                     stok,
@@ -142,6 +155,7 @@ class Barang extends Model
                     :barcode,
                     :nama,
                     :id_kategori,
+                    :id_supplier,
                     :satuan,
                     :harga_jual,
                     0,
@@ -155,6 +169,7 @@ class Barang extends Model
             'barcode' => $this->nullable($data['barcode'] ?? ''),
             'nama' => trim((string) $data['nama']),
             'id_kategori' => (int) $data['id_kategori'],
+            'id_supplier' => $this->nullableId($data['id_supplier'] ?? null),
             'satuan' => trim((string) ($data['satuan'] ?? 'pcs')),
             'harga_jual' => (float) $data['harga_jual'],
             'stok_minimum' => (int) $data['stok_minimum'],
@@ -177,6 +192,7 @@ class Barang extends Model
                 barcode = :barcode,
                 nama = :nama,
                 id_kategori = :id_kategori,
+                id_supplier = :id_supplier,
                 satuan = :satuan,
                 harga_jual = :harga_jual,
                 stok_minimum = :stok_minimum,
@@ -190,6 +206,7 @@ class Barang extends Model
             'barcode' => $this->nullable($data['barcode'] ?? ''),
             'nama' => trim((string) $data['nama']),
             'id_kategori' => (int) $data['id_kategori'],
+            'id_supplier' => $this->nullableId($data['id_supplier'] ?? null),
             'satuan' => trim((string) ($data['satuan'] ?? 'pcs')),
             'harga_jual' => (float) $data['harga_jual'],
             'stok_minimum' => (int) $data['stok_minimum'],
@@ -373,6 +390,8 @@ class Barang extends Model
                 b.nama,
                 b.id_kategori,
                 k.nama AS nama_kategori,
+                b.id_supplier,
+                s.nama AS nama_supplier,
                 b.satuan,
                 b.harga_jual,
                 b.stok,
@@ -380,6 +399,7 @@ class Barang extends Model
                 b.status
             FROM {$this->table} b
             INNER JOIN kategori k ON k.id = b.id_kategori
+            LEFT JOIN supplier s ON s.id = b.id_supplier
             WHERE b.barcode = :barcode
               AND b.status = 'aktif'
             LIMIT 1
@@ -558,6 +578,8 @@ class Barang extends Model
                 b.nama,
                 b.id_kategori,
                 k.nama AS nama_kategori,
+                b.id_supplier,
+                s.nama AS nama_supplier,
                 b.satuan,
                 b.harga_jual,
                 b.stok,
@@ -567,6 +589,7 @@ class Barang extends Model
                 b.updated_at
             FROM {$this->table} b
             INNER JOIN kategori k ON k.id = b.id_kategori
+            LEFT JOIN supplier s ON s.id = b.id_supplier
             ORDER BY b.nama ASC
             LIMIT {$perPage} OFFSET {$offset}
         ";
@@ -613,6 +636,7 @@ class Barang extends Model
         SELECT COUNT(b.id) AS total
         FROM {$this->table} b
         INNER JOIN kategori k ON k.id = b.id_kategori
+            LEFT JOIN supplier s ON s.id = b.id_supplier
         {$where}
     ";
 
@@ -647,6 +671,7 @@ public function getPaginatedFiltered(array $filters = [], int $page = 1, int $pe
             b.updated_at
         FROM {$this->table} b
         INNER JOIN kategori k ON k.id = b.id_kategori
+            LEFT JOIN supplier s ON s.id = b.id_supplier
         {$where}
         ORDER BY b.nama ASC
         LIMIT {$perPage} OFFSET {$offset}
@@ -665,14 +690,20 @@ private function buildFilteredWhere(array $filters, array &$params): string
 
     if ($search !== '') {
         $where[] = "(
-            b.kode_barang LIKE :search
-            OR b.barcode LIKE :search
-            OR b.nama LIKE :search
-            OR k.nama LIKE :search
-            OR b.satuan LIKE :search
+            b.kode_barang LIKE :search_kode
+            OR b.barcode LIKE :search_barcode
+            OR b.nama LIKE :search_nama
+            OR k.nama LIKE :search_kategori
+            OR b.satuan LIKE :search_satuan
         )";
 
-        $params['search'] = '%' . $search . '%';
+        $keyword = '%' . $search . '%';
+
+        $params['search_kode'] = $keyword;
+        $params['search_barcode'] = $keyword;
+        $params['search_nama'] = $keyword;
+        $params['search_kategori'] = $keyword;
+        $params['search_satuan'] = $keyword;
     }
 
     if (in_array($status, ['aktif', 'nonaktif'], true)) {
@@ -700,5 +731,12 @@ private function buildFilteredWhere(array $filters, array &$params): string
         $value = trim((string) $value);
 
         return $value === '' ? null : $value;
+    }
+
+    private function nullableId($value)
+    {
+        $value = trim((string) $value);
+
+        return $value === '' ? null : (int) $value;
     }
 }
