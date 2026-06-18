@@ -1081,3 +1081,250 @@
         flex-basis: 100%;
     }
 }
+
+/* =========================================================
+   RESTOCK FILTER/TABLE - FINAL CLIENT FIX
+   Filter hanya tanggal mulai, tanggal selesai, tipe.
+   Tabel dibuat muat tanpa scroll horizontal di desktop.
+   ========================================================= */
+
+.restock-panel-header {
+    grid-template-columns: minmax(180px, 260px) minmax(0, 1fr);
+    align-items: start;
+}
+
+.restock-tools {
+    min-width: 0;
+    width: 100%;
+    justify-items: stretch;
+}
+
+.restock-date-filter {
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(130px, 1fr) minmax(130px, 1fr) minmax(130px, 0.85fr) auto auto;
+    align-items: end;
+    justify-content: stretch;
+    gap: 8px;
+}
+
+.restock-date-filter label {
+    min-width: 0;
+}
+
+.restock-date-filter input,
+.restock-date-filter .restock-filter-select,
+.restock-search input {
+    width: 100%;
+    min-height: 38px;
+    border: 1px solid var(--app-border);
+    border-radius: 12px;
+    outline: none;
+    color: var(--app-text);
+    background-color: #ffffff;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.restock-date-filter input,
+.restock-date-filter .restock-filter-select {
+    padding: 0 11px;
+}
+
+.restock-filter-select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 30px !important;
+    cursor: pointer;
+    background-image:
+        linear-gradient(45deg, transparent 50%, #64748b 50%),
+        linear-gradient(135deg, #64748b 50%, transparent 50%);
+    background-position:
+        calc(100% - 16px) 50%,
+        calc(100% - 11px) 50%;
+    background-size:
+        5px 5px,
+        5px 5px;
+    background-repeat: no-repeat;
+}
+
+.restock-date-filter input:focus,
+.restock-date-filter .restock-filter-select:focus,
+.restock-search input:focus {
+    border-color: rgba(18, 128, 72, 0.34);
+    box-shadow: 0 0 0 3px rgba(18, 128, 72, 0.08);
+}
+
+.restock-date-filter .restock-btn {
+    min-height: 38px;
+    white-space: nowrap;
+}
+
+.restock-search {
+    width: 100%;
+    max-width: none;
+}
+
+.restock-search input {
+    min-height: 40px;
+    padding-left: 40px;
+}
+
+.restock-table-wrap {
+    overflow-x: hidden;
+}
+
+.restock-table {
+    width: 100%;
+    min-width: 0;
+    table-layout: fixed;
+}
+
+.restock-table th,
+.restock-table td {
+    padding: 8px 7px;
+    overflow: hidden;
+}
+
+/* Sembunyikan kolom No dan Tipe supaya tabel cukup tanpa scroll samping.
+   Tipe masih kebaca dari tanda + / - di kolom Qty. */
+.restock-table th:nth-child(1),
+.restock-table td:nth-child(1),
+.restock-table th:nth-child(2),
+.restock-table td:nth-child(2) {
+    display: none;
+}
+
+.restock-table th:nth-child(3),
+.restock-table td:nth-child(3) {
+    width: 11%;
+}
+
+.restock-table th:nth-child(4),
+.restock-table td:nth-child(4) {
+    width: 24%;
+}
+
+.restock-table th:nth-child(5),
+.restock-table td:nth-child(5) {
+    width: 18%;
+}
+
+.restock-table th:nth-child(6),
+.restock-table td:nth-child(6) {
+    width: 8%;
+}
+
+.restock-table th:nth-child(7),
+.restock-table td:nth-child(7),
+.restock-table th:nth-child(8),
+.restock-table td:nth-child(8) {
+    width: 11%;
+}
+
+.restock-table th:nth-child(9),
+.restock-table td:nth-child(9) {
+    width: 9%;
+}
+
+.restock-product {
+    min-width: 0;
+    gap: 7px;
+}
+
+.restock-product div {
+    min-width: 0;
+}
+
+.restock-product strong,
+.restock-product small,
+.restock-note {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.restock-product-icon {
+    width: 30px;
+    height: 30px;
+    flex-basis: 30px;
+}
+
+.restock-pill,
+.restock-date,
+.restock-user,
+.restock-qty {
+    max-width: 100%;
+    min-height: 24px;
+    padding: 4px 6px;
+    font-size: 9px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.restock-money {
+    font-size: 10px;
+}
+
+@media (max-width: 1200px) {
+    .restock-panel-header {
+        grid-template-columns: 1fr;
+    }
+
+    .restock-date-filter {
+        grid-template-columns: repeat(3, minmax(120px, 1fr)) auto auto;
+    }
+}
+
+@media (max-width: 991px) {
+    .restock-date-filter {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .restock-date-filter .restock-btn {
+        width: 100%;
+    }
+
+    .restock-table th:nth-child(5),
+    .restock-table td:nth-child(5),
+    .restock-table th:nth-child(9),
+    .restock-table td:nth-child(9),
+    .restock-table th:nth-child(10),
+    .restock-table td:nth-child(10) {
+        display: none;
+    }
+
+    .restock-table th:nth-child(3),
+    .restock-table td:nth-child(3) {
+        width: 18%;
+    }
+
+    .restock-table th:nth-child(4),
+    .restock-table td:nth-child(4) {
+        width: 38%;
+    }
+
+    .restock-table th:nth-child(6),
+    .restock-table td:nth-child(6) {
+        width: 14%;
+    }
+
+    .restock-table th:nth-child(7),
+    .restock-table td:nth-child(7),
+    .restock-table th:nth-child(8),
+    .restock-table td:nth-child(8) {
+        width: 15%;
+    }
+}
+
+@media (max-width: 640px) {
+    .restock-date-filter {
+        grid-template-columns: 1fr;
+    }
+
+    .restock-table th:nth-child(7),
+    .restock-table td:nth-child(7) {
+        display: none;
+    }
+}

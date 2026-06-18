@@ -4,7 +4,8 @@
     const state = {
         products: [],
         cart: new Map(),
-        activeCategory: 'all'
+        activeCategory: 'all',
+        activeStock: 'available'
     };
 
     function ready(callback) {
@@ -299,9 +300,12 @@
         cards.forEach(function (card) {
             const searchText = normalize(card.dataset.search);
             const category = String(card.dataset.category || '');
+            const stockStatus = String(card.dataset.stockStatus || 'available');
+
             const matchKeyword = keyword === '' || searchText.includes(keyword);
             const matchCategory = state.activeCategory === 'all' || category === state.activeCategory;
-            const visible = matchKeyword && matchCategory;
+            const matchStock = state.activeStock === 'all' || stockStatus === state.activeStock;
+            const visible = matchKeyword && matchCategory && matchStock;
 
             card.hidden = !visible;
 
@@ -484,6 +488,24 @@
         });
     }
 
+    function initStockFilters() {
+        const buttons = Array.from(document.querySelectorAll('[data-stock-filter]'));
+
+        buttons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                state.activeStock = button.dataset.stockFilter || 'available';
+
+                buttons.forEach(function (item) {
+                    item.classList.toggle('is-active', item === button);
+                });
+
+                applyProductFilter();
+            });
+        });
+
+        applyProductFilter();
+    }
+
     function initPayment() {
         document.querySelectorAll('[data-payment-method]').forEach(function (input) {
             input.addEventListener('change', updatePayment);
@@ -559,6 +581,7 @@
         initProductCards();
         initSearch();
         initCategories();
+        initStockFilters();
         initPayment();
         initClearCart();
         initKeyboardShortcuts();

@@ -24,11 +24,58 @@ class RestockController extends Controller
         $tanggalMulai = trim($_GET['tanggal_mulai'] ?? '');
         $tanggalSelesai = trim($_GET['tanggal_selesai'] ?? '');
         $filterTipe = trim($_GET['tipe'] ?? '');
+        $filterBarang = trim($_GET['id_barang'] ?? '');
+        $filterSupplier = trim($_GET['id_supplier'] ?? '');
+
+        if (!in_array($filterTipe, ['', 'masuk', 'keluar'], true)) {
+            $filterTipe = '';
+        }
+
+        $filterBarangId = ctype_digit($filterBarang) && (int) $filterBarang > 0
+            ? (int) $filterBarang
+            : null;
+
+        $filterSupplierId = ctype_digit($filterSupplier) && (int) $filterSupplier > 0
+            ? (int) $filterSupplier
+            : null;
+
+        if ($filterBarangId === null) {
+            $filterBarang = '';
+        }
+
+        if ($filterSupplierId === null) {
+            $filterSupplier = '';
+        }
+
+        $hasFilter = $tanggalMulai !== ''
+            || $tanggalSelesai !== ''
+            || $filterTipe !== ''
+            || $filterBarangId !== null
+            || $filterSupplierId !== null;
+
+        // Ambil data opsi filter
+        $barangs = $this->barangModel->getActive();
+        $suppliers = $this->supplierModel->getActive();
 
         // Ambil data
-        if ($tanggalMulai !== '' || $tanggalSelesai !== '' || $filterTipe !== '') {
-            $restocks = $this->restockModel->getFiltered($tanggalMulai, $tanggalSelesai, $filterTipe);
-            $summary = $this->restockModel->summary($tanggalMulai, $tanggalSelesai, $filterTipe);
+        if ($hasFilter) {
+            $restocks = $this->restockModel->getFiltered(
+                $tanggalMulai,
+                $tanggalSelesai,
+                $filterTipe,
+                500,
+                $filterBarangId,
+                $filterSupplierId
+            );
+
+            $summary = $this->restockModel->summary(
+                $tanggalMulai,
+                $tanggalSelesai,
+                $filterTipe,
+                $filterBarangId,
+                $filterSupplierId
+            );
+
             $pagination = null;
         } else {
             // Pagination
@@ -58,6 +105,10 @@ class RestockController extends Controller
             'tanggalMulai' => $tanggalMulai,
             'tanggalSelesai' => $tanggalSelesai,
             'filterTipe' => $filterTipe,
+            'filterBarang' => $filterBarang,
+            'filterSupplier' => $filterSupplier,
+            'barangs' => $barangs,
+            'suppliers' => $suppliers,
             'flash' => [
                 'success' => Session::getFlash('success'),
                 'error' => Session::getFlash('error'),

@@ -233,6 +233,22 @@ require APP_PATH . '/views/layouts/navbar.php';
                         </button>
                     <?php endforeach; ?>
                 </div>
+
+                <div class="pos-stock-tabs" data-pos-stock-tabs>
+                    <span>Filter Stok</span>
+                    <button type="button" class="is-active" data-stock-filter="available">
+                        <i class="ti ti-circle-check"></i>
+                        Stok Ada
+                    </button>
+                    <button type="button" data-stock-filter="empty">
+                        <i class="ti ti-alert-circle"></i>
+                        Stok Habis
+                    </button>
+                    <button type="button" data-stock-filter="all">
+                        <i class="ti ti-package"></i>
+                        Semua Stok
+                    </button>
+                </div>
             </div>
 
             <?php if (empty($barangs)): ?>
@@ -267,6 +283,7 @@ require APP_PATH . '/views/layouts/navbar.php';
                         $stokMinimum = (int) ($barang['stok_minimum'] ?? 0);
                         $stockMeta = pos_stock_meta($stok, $stokMinimum);
                         $isOut = $stok <= 0;
+                        $stockStatus = $isOut ? 'empty' : 'available';
 
                         $searchText = strtolower(implode(' ', [
                             $kode,
@@ -283,6 +300,8 @@ require APP_PATH . '/views/layouts/navbar.php';
                             data-product-card
                             data-product-id="<?= app_e((string) $id) ?>"
                             data-category="<?= app_e($kategoriId) ?>"
+                            data-stock="<?= app_e((string) $stok) ?>"
+                            data-stock-status="<?= app_e($stockStatus) ?>"
                             data-search="<?= app_e($searchText) ?>"
                             <?= $isOut ? 'disabled' : '' ?>
                         >

@@ -143,9 +143,9 @@ class Restock extends Model
         return $this->create($data);
     }
 
-    public function getFiltered(?string $start = null, ?string $end = null, ?string $tipe = null, int $limit = 200): array
+    public function getFiltered(?string $start = null, ?string $end = null, ?string $tipe = null, int $limit = 200, ?int $idBarang = null, ?int $idSupplier = null): array
     {
-        // Filter tanggal + tipe
+        // Filter tanggal + tipe + barang + supplier
         $limit = max(1, min($limit, 500));
 
         $sql = "
@@ -190,6 +190,16 @@ class Restock extends Model
         if ($tipe !== null && $tipe !== '' && in_array($tipe, ['masuk', 'keluar'], true)) {
             $sql .= " AND r.tipe = :tipe";
             $params['tipe'] = $tipe;
+        }
+
+        if ($idBarang !== null && $idBarang > 0) {
+            $sql .= " AND r.id_barang = :id_barang";
+            $params['id_barang'] = $idBarang;
+        }
+
+        if ($idSupplier !== null && $idSupplier > 0) {
+            $sql .= " AND r.id_supplier = :id_supplier";
+            $params['id_supplier'] = $idSupplier;
         }
 
         $sql .= "
@@ -280,7 +290,7 @@ class Restock extends Model
         return $harga === false ? 0.0 : (float) $harga;
     }
 
-    public function summary(?string $start = null, ?string $end = null, ?string $tipe = null): array
+    public function summary(?string $start = null, ?string $end = null, ?string $tipe = null, ?int $idBarang = null, ?int $idSupplier = null): array
     {
         // Ringkasan restock
         $sql = "
@@ -309,6 +319,16 @@ class Restock extends Model
         if ($tipe !== null && $tipe !== '' && in_array($tipe, ['masuk', 'keluar'], true)) {
             $sql .= " AND r.tipe = :tipe";
             $params['tipe'] = $tipe;
+        }
+
+        if ($idBarang !== null && $idBarang > 0) {
+            $sql .= " AND r.id_barang = :id_barang";
+            $params['id_barang'] = $idBarang;
+        }
+
+        if ($idSupplier !== null && $idSupplier > 0) {
+            $sql .= " AND r.id_supplier = :id_supplier";
+            $params['id_supplier'] = $idSupplier;
         }
 
         $row = $this->fetch($sql, $params);
